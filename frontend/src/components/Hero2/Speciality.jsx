@@ -1,5 +1,6 @@
 "use client"
 import { motion } from 'framer-motion';
+import RevealonScroll from '../../RevealonScroll'
 
 const Speciality = () => {
   const specialities = [
@@ -12,7 +13,9 @@ const Speciality = () => {
   ];
 
   return (
-    <section className="py-12   px-4 sm:px-8 lg:px-16 font-title">
+    <RevealonScroll>
+      
+    <section className="py-12   px-4 sm:px-8 lg:px-16 font-title bg-white">
         <div className='rounded-[5vw] bg-gray-200 p-[5%]'>
       <div className="text-center  ">
         <h2 className="text-[8vh] font-bold text-slate-800 mb-2 ">Find by Speciality</h2>
@@ -22,7 +25,7 @@ const Speciality = () => {
         </p>
       </div>
 
-      <motion.div drag className="flex flex-wrap justify-center gap-8 ">
+      <motion.div  className="flex flex-wrap justify-center gap-8 ">
         {specialities.map((speciality, index) => (
           <div key={index} className="flex flex-col items-center text-center space-y-2 pb-[30px] hover:-translate-y-5 hover:border-indigo-500 transition-all duration-300 hover:border-b-4 cursor-pointer">
             {/* Use actual icons/images here */}
@@ -35,6 +38,7 @@ const Speciality = () => {
       </motion.div>
       </div>
     </section>
+    </RevealonScroll>
   );
 };
 
