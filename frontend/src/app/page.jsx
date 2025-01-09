@@ -1,5 +1,9 @@
 // import Image from "next/image";
-import Hero from "../components/Hero/Hero";
+// import Hero from "../components/Hero/Hero";
+import Hero from "@/components/Hero2/Hero2"
+import Speciality from "@/components/Hero2/Speciality"
+import Statistics from "@/components/Hero2/Statistics"
+
 import Head from "next/head";
 import  CTA  from "@/components/appointments/CTA";
 
@@ -12,7 +16,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Hero />
+      <Hero/>
+      <Speciality/>
+      <Statistics/>
       <CTA />
       {/* Other components and content */}
     </div>
