@@ -86,7 +86,7 @@ export default function SignInForm() {
         <div className="text-center">
           {/* TODO: Add the website name */}
           <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
-            Welcome Back to Website Name
+            Welcome Back to MEDTECH
           </h1>
           <p className="mb-4">Sign in to continue your meds</p>
         </div>
