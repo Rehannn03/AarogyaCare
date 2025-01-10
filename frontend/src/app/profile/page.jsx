@@ -259,10 +259,6 @@ const Profile = () => {
     }
   };
 
-  if (!user) {
-    return <div>Loading...</div>; // or some loading state
-  }
-
   return (
     <div className="min-h-screen p-6 flex flex-col items-center">
       <div className="w-full max-w-4xl flex flex-col lg:flex-row gap-10">

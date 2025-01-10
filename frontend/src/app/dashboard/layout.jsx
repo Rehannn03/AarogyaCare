@@ -10,10 +10,11 @@ export default function DashboardLayout({ children }) {
   const router = useRouter();
 
   useEffect(() => {
+    console.log("user from layout ", user)
     if (!user) {
       fetchAndSetUserStore(update);
     } else if (user.role !== "doctor" && user.role !== "admin") {
-      router.push("/404");
+      router.push("/dashboard");
     } 
   // TODO: Uncomment the following code to enable verification
     // else if (user.role === "doctor" && !user.verified) {
