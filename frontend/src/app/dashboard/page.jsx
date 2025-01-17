@@ -79,7 +79,7 @@ const page = () => {
   };
 
   useEffect(() => {
-    console.log("user dashboard", user)
+    console.log("user dashboard Azlaan", user)
     if (user) {
       setLoading(true);
       getStats();

@@ -4,34 +4,27 @@ import React, { useState, useEffect } from 'react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { RxAvatar } from 'react-icons/rx';
 import { AiOutlineClose } from 'react-icons/ai';
-import Button from './Button'; // Reusable button component
+import Button from './Button';
 import Link from 'next/link';
-import { useUserStore } from "@/stores/store";// Context hook for user data
-
-
-const fadeIn = {
-  hidden: {
-    opacity: 0,
-    y: -100,
-  },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      staggerChildren: 0.3,
-      duration: 0.5,
-    },
-  },
-};
+import { useUserStore } from "@/stores/store";  // Assuming this is the correct store
 
 const Navbar = () => {
-  const { user } = useUserStore();
-
+  const { user } = useUserStore();  // Get user from the store
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const [userImg, setUserImg] = useState(user?.avatar || '/default-avatar.png');
+  
   const handleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  useEffect(() => {
+    console.log('User object:', user); // Log the user object
+    if (user?.avatar) {
+      setUserImg(user.avatar);
+    } else {
+      setUserImg('/default-avatar.png');  // Ensure fallback image if no avatar is present
+    }
+  }, [user?.avatar]);  // Trigger effect when user.avatar changes
 
   const closeMenu = () => {
     setIsMenuOpen(false);
@@ -39,17 +32,8 @@ const Navbar = () => {
 
   const navLinks = ['Pricing', 'Features', 'About', 'Contact', 'Blog'];
 
-  useEffect(() => {
-    console.log('User data:', user);
-  }, [user]);
-
   return (
-    <nav
-      variants={fadeIn}
-      initial="hidden"
-      animate="show"
-      className="h-[72px] bg-[white] flex items-center justify-between px-6 md:pl-8 border-b-2 border-[#84CC16] relative z-[50]"
-    >
+    <nav className="h-[72px] bg-[white] flex items-center justify-between px-6 md:pl-8 border-b-2 border-[#84CC16] relative z-[50]">
       {/* Logo */}
       <div>
         <a href="/">
@@ -75,13 +59,17 @@ const Navbar = () => {
         {user ? (
           <div className="flex items-center gap-4">
             <span className="text-black font-medium">Welcome, {user.name}</span>
-            <div className="h-[60px] w-[60px] rounded-full overflow-hidden bg-white p-1 content-center">
-              <Link href={'/profile'}>
-             {user.profilePicture ? <img
-                src={user.profilePicture || < RxAvatar/>}
-                alt="Profile"
-                className="h-full w-full object-cover rounded-full"
-              /> :< RxAvatar size={40} className=' items-center'/> } 
+            <div className="h-[50px] w-[50px] rounded-full overflow-hidden bg-white p-1">
+              <Link href="/profile">
+                {userImg ? (
+                  <img
+                    src={userImg}
+                    alt="Profile"
+                    className="h-full w-full object-cover rounded-full"
+                  />
+                ) : (
+                  <RxAvatar size={40} className="items-center" />
+                )}
               </Link>
             </div>
           </div>
@@ -91,9 +79,7 @@ const Navbar = () => {
             size="lg"
             className="mr-[2em] text-green-600 hover:bg-blue-300 hover:text-white transition-colors duration-200 hidden md:flex md:text-sm"
           >
-            <Link href={user ? Router.replace("/dashboard"): '/sign-up'}>
-              {user ? 'Go to Dashboard' : 'Sign Up'}
-            </Link>
+            <Link href="/sign-up">Sign Up</Link>
           </Button>
         )}
       </div>
@@ -115,10 +101,7 @@ const Navbar = () => {
           >
             <AiOutlineClose className="text-2xl text-gray-800" />
           </div>
-          <div
-            className="flex flex-col items-center mt-12"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="flex flex-col items-center mt-12">
             {navLinks.map((link, index) => (
               <Link
                 key={index}
@@ -131,21 +114,17 @@ const Navbar = () => {
             ))}
             <div className="flex justify-center mt-4">
               {user ? (
-                <Link href="/profile" className=' cursor-pointer'>
-                <div className="flex items-center gap-4">
-                 
-                  <span className="text-black font-medium">Welcome, {user.name}</span>
-                  <div className="h-[60px] w-[60px] rounded-full overflow-hidden bg-white p-1">
-                  
-                    <img
-                      src={user.profilePicture || '/default-avatar.png'}
-                      alt="Profile"
-                      className="h-full w-full object-cover rounded-full"
-                    />
-                   
+                <Link href="/profile">
+                  <div className="flex items-center gap-4">
+                    <span className="text-black font-medium">Welcome, {user.name}</span>
+                    <div className="h-[60px] w-[60px] rounded-full overflow-hidden bg-white p-1">
+                      <img
+                        src={user.avatar || '/default-avatar.png'}
+                        alt="Profile"
+                        className="h-full w-full object-cover rounded-full"
+                      />
+                    </div>
                   </div>
-                  
-                </div>
                 </Link>
               ) : (
                 <Button
@@ -154,9 +133,7 @@ const Navbar = () => {
                   className="justify-center text-green-600 hover:bg-blue-300 hover:text-white transition-colors duration-200"
                   onClick={closeMenu}
                 >
-                  <Link href={user ? Router.replace("/dashboard") : '/sign-up'}>
-                    {user ? 'Go to Dashboard' : 'Sign Up'}
-                  </Link>
+                  <Link href="/sign-up">Sign Up</Link>
                 </Button>
               )}
             </div>

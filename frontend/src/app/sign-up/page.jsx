@@ -55,7 +55,7 @@ const page = () => {
         title: "Success",
         description: "Sign Up Successful",
       });
-      router.replace(`/appointment`);
+      router.replace(`/sign-in`);
       setIsSubmitting(false);
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Sign Up Failed";

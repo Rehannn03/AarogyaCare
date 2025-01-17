@@ -48,7 +48,6 @@ export default function SignInForm() {
       const userData = await apiClient.get("/users/profile");
       const user = userData.data.data.user;
       update(user);
-        // ! Why is there profile age in signin 
     
         if (user.role === 'admin' || user.role === 'doctor') {
           router.replace("/dashboard");

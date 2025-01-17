@@ -16,8 +16,10 @@ import { useToast } from "@/components/ui/use-toast";
 import apiClient from "@/api-client/apiClient";
 import { InputTags } from "@/components/appointments";
 
+
+
 const Profile = () => {
-  // const { user, update } = useUserStore();
+  
   // const { toast } = useToast();
   // const [allergies, setAllergies] = useState([]);
 
@@ -69,8 +71,9 @@ const Profile = () => {
   //   }
   // }, [user]);
 
-  const [selectedImg,setSelectedImg]=useState()
-
+  const [selectedImg,setSelectedImg]=useState("")
+  const [userImg, setUserImg] = useState(null);
+  const[preview,setPreview]=useState(false)
   const { user, update } = useUserStore();
   const { toast } = useToast();
   const [newProfilePicture, setNewProfilePicture] = useState(null);
@@ -115,40 +118,6 @@ const Profile = () => {
     }
   }, [user]);
 
-  useEffect(() => {
-    console.log("Current form data:");
-    console.log({
-      name,
-      email,
-      contact,
-      address,
-      city,
-      age,
-      gender,
-      existingDiseases,
-      allergies,
-      isDiabetic,
-      isPregnant,
-      isBP,
-    });
-
-    console.log("aller", allergies);
-  }, [
-    name,
-    email,
-    contact,
-    address,
-    city,
-    age,
-    gender,
-    existingDiseases,
-    allergies,
-    isDiabetic,
-    isPregnant,
-    isBP,
-  ]);
-
-
 
   // const handleImageUpload = (e) => {
   //   const file = e.target.files[0];
@@ -162,7 +131,8 @@ const Profile = () => {
   // };
 
   const triggerFileInput = () => {
-    fileInputRef.current.click();
+    setPreview(true)
+      fileInputRef.current.click()
   };
   //TOOD: FIX 
  
@@ -197,7 +167,7 @@ const Profile = () => {
           isPregnant,
           isBP,
         };
-        console.log(formDataToSend)
+        // console.log(formDataToSend)
         // Handle profile picture
         // if (newProfilePicture) {
         //   const response = await apiClient.patch("/users/profile", 
@@ -261,17 +231,60 @@ const Profile = () => {
     }
   };
 
+
+  const onConfirm = async () => {
+    if (!fileInputRef.current?.files[0]) {
+      alert("Please select an image first.");
+      return;
+    }
+    
+  
+    const formData = new FormData();
+    formData.append("avatar", fileInputRef.current.files[0]); // Append the file
+  
+    try {
+      const response = await apiClient.patch("/users/profile/pfp", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Required for FormData
+        },
+      });
+      
+      setUserImg(response.data?.data?.user?.avatar); // Update the user's image
+      alert("Profile picture updated successfully!");
+      fetchAndSetUserStore((updatedUser) => {
+        set
+      })
+      setPreview(false)
+    } catch (error) {
+      console.error("Error updating profile picture:", error);
+      alert("Failed to update profile picture.");
+    }
+  };
+  
+  
+  const handleFileUpload=(e)=>{
+    const file=e.target.files[0];
+    console.log(file);
+    
+    let reader =new FileReader();
+    reader.onloadend=function(){
+      setSelectedImg(reader.result)
+    };
+    reader.readAsDataURL(file);
+
+  }
+
   return (
     <div className="min-h-screen p-6 flex flex-col items-center">
       <div className="w-full max-w-4xl flex flex-col lg:flex-row gap-10">
         {/* Profile Section */}
         <div className="flex flex-col items-center w-full lg:w-1/3">
           <div className="h-72 w-72 p-2 flex justify-center items-center overflow-hidden rounded-full shadow-md bg-white border">
-            <img
-              src={selectedImg}
-              alt="Profile"
-              className="object-cover w-full h-full bg-white rounded-full"
-            />
+          <img
+          src={selectedImg || user?.avatar } // Display uploaded or fetched image
+          alt="Profile"
+          className="object-cover w-full h-full bg-white rounded-full"
+        />
           </div>
           <div className="mt-6">
             <h2 className="text-center text-2xl font-bold">{name}</h2>
@@ -289,10 +302,7 @@ const Profile = () => {
               ref={fileInputRef}
               className="hidden"
               accept="image/*"
-              onChange={(e) =>{
-                const file =e.target.files?.[0];
-                setSelectedImg(file? URL.createObjectURL(file):undefined)
-              } }
+              onChange={handleFileUpload}
             />
             <button
               className="text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150 py-2 px-4 cursor-pointer"
@@ -300,6 +310,13 @@ const Profile = () => {
             >
               <MdPhotoCamera className="h-5 w-5 inline" /> Choose Image
             </button>
+            {selectedImg && preview &&  <button
+              className="text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150 py-2 px-4 cursor-pointer mt-3"
+              onClick={onConfirm}
+            >
+              <MdPhotoCamera className="h-5 w-5 inline" /> Confirm 
+            </button>}
+           
           </div>
         </div>
 
