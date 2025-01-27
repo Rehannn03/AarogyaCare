@@ -22,7 +22,7 @@ const Room = ({ params }: { params: { roomid: string } }) => {
       serverSecret,
       roomID,
       uuid(),
-      user?.name|| "user" + Date.now(),
+      user?.name || "user" + Date.now(),
       720
     );
 
