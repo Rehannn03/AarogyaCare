@@ -69,6 +69,8 @@ const Profile = () => {
   //   }
   // }, [user]);
 
+  const [selectedImg,setSelectedImg]=useState()
+
   const { user, update } = useUserStore();
   const { toast } = useToast();
   const [newProfilePicture, setNewProfilePicture] = useState(null);
@@ -266,7 +268,7 @@ const Profile = () => {
         <div className="flex flex-col items-center w-full lg:w-1/3">
           <div className="h-72 w-72 p-2 flex justify-center items-center overflow-hidden rounded-full shadow-md bg-white border">
             <img
-              src={newProfilePicture || profilePicture}
+              src={selectedImg}
               alt="Profile"
               className="object-cover w-full h-full bg-white rounded-full"
             />
@@ -287,7 +289,10 @@ const Profile = () => {
               ref={fileInputRef}
               className="hidden"
               accept="image/*"
-              // onChange={(e) => }
+              onChange={(e) =>{
+                const file =e.target.files?.[0];
+                setSelectedImg(file? URL.createObjectURL(file):undefined)
+              } }
             />
             <button
               className="text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150 py-2 px-4 cursor-pointer"

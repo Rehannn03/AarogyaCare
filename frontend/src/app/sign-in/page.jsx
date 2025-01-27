@@ -48,15 +48,8 @@ export default function SignInForm() {
       const userData = await apiClient.get("/users/profile");
       const user = userData.data.data.user;
       update(user);
-
-      if (user.profile.age === 0) {
-        toast({
-          title: "Incomplete Profile",
-          description: "Please fill in your details first.",
-          variant: "destructive",
-        });
-        router.replace("/profile");
-      } else {
+        // ! Why is there profile age in signin 
+    
         if (user.role === 'admin' || user.role === 'doctor') {
           router.replace("/dashboard");
         } else if (user.role === 'patient') {
@@ -67,7 +60,7 @@ export default function SignInForm() {
             description: "Your user role is not recognized.",
             variant: "destructive",
           });
-        }
+        
       }
     } catch (error) {
       const axiosError = error;

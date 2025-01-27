@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GiHamburgerMenu } from 'react-icons/gi';
 import { RxAvatar } from 'react-icons/rx';
 import { AiOutlineClose } from 'react-icons/ai';
 import Button from './Button'; // Reusable button component
 import Link from 'next/link';
+import { useUserStore } from "@/stores/store";// Context hook for user data
+
 
 const fadeIn = {
   hidden: {
@@ -16,15 +18,16 @@ const fadeIn = {
     opacity: 1,
     y: 0,
     transition: {
-      staggerChildren: 0.3, // Delay between children animations
+      staggerChildren: 0.3,
       duration: 0.5,
     },
   },
 };
 
 const Navbar = () => {
-  const [isLogin, setIsLogin] = useState(false); // State to manage login status
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // State to manage mobile menu
+  const { user } = useUserStore();
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -35,6 +38,10 @@ const Navbar = () => {
   };
 
   const navLinks = ['Pricing', 'Features', 'About', 'Contact', 'Blog'];
+
+  useEffect(() => {
+    console.log('User data:', user);
+  }, [user]);
 
   return (
     <nav
@@ -65,11 +72,17 @@ const Navbar = () => {
 
       {/* Avatar or SignUp Button for Desktop */}
       <div className="hidden md:flex items-center gap-4">
-        {isLogin ? (
+        {user ? (
           <div className="flex items-center gap-4">
-            <span className="text-black font-medium">Welcome, User</span>
-            <div className="h-[60px] w-[60px] rounded-full overflow-hidden bg-white p-1">
-              <RxAvatar className="text-[60px] object-cover" />
+            <span className="text-black font-medium">Welcome, {user.name}</span>
+            <div className="h-[60px] w-[60px] rounded-full overflow-hidden bg-white p-1 content-center">
+              <Link href={'/profile'}>
+             {user.profilePicture ? <img
+                src={user.profilePicture || < RxAvatar/>}
+                alt="Profile"
+                className="h-full w-full object-cover rounded-full"
+              /> :< RxAvatar size={40} className=' items-center'/> } 
+              </Link>
             </div>
           </div>
         ) : (
@@ -78,7 +91,9 @@ const Navbar = () => {
             size="lg"
             className="mr-[2em] text-green-600 hover:bg-blue-300 hover:text-white transition-colors duration-200 hidden md:flex md:text-sm"
           >
-            <Link href="/sign-up"> Sign Up</Link>
+            <Link href={user ? Router.replace("/dashboard"): '/sign-up'}>
+              {user ? 'Go to Dashboard' : 'Sign Up'}
+            </Link>
           </Button>
         )}
       </div>
@@ -92,47 +107,57 @@ const Navbar = () => {
       {isMenuOpen && (
         <div
           className="fixed top-0 left-0 w-full h-screen bg-white z-[100]"
-          onClick={closeMenu} // Close the menu when clicking outside links
+          onClick={closeMenu}
         >
           <div
             className="absolute top-0 right-0 m-4 cursor-pointer"
-            onClick={handleMenu} // Close button to close the menu
+            onClick={handleMenu}
           >
             <AiOutlineClose className="text-2xl text-gray-800" />
           </div>
           <div
             className="flex flex-col items-center mt-12"
-            onClick={(e) => e.stopPropagation()} // Prevent click from propagating to the background
+            onClick={(e) => e.stopPropagation()}
           >
             {navLinks.map((link, index) => (
               <Link
                 key={index}
                 href={`/${link.toLowerCase()}`}
                 className="font-medium text-[#84CC16] text-xl py-3 hover:text-blue-600 hover:scale-105 transition-all duration-300 ease-in-out transform"
-                onClick={closeMenu} // Close menu after clicking a link
+                onClick={closeMenu}
               >
                 {link}
               </Link>
             ))}
             <div className="flex justify-center mt-4">
-              {isLogin ? (
+              {user ? (
+                <Link href="/profile" className=' cursor-pointer'>
                 <div className="flex items-center gap-4">
-                  <span className="text-black font-medium">Welcome, User</span>
+                 
+                  <span className="text-black font-medium">Welcome, {user.name}</span>
                   <div className="h-[60px] w-[60px] rounded-full overflow-hidden bg-white p-1">
-                    <RxAvatar className="text-[60px] object-cover" />
+                  
+                    <img
+                      src={user.profilePicture || '/default-avatar.png'}
+                      alt="Profile"
+                      className="h-full w-full object-cover rounded-full"
+                    />
+                   
                   </div>
+                  
                 </div>
+                </Link>
               ) : (
-                <div className="flex">
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    className="justify-center text-green-600 hover:bg-blue-300 hover:text-white transition-colors duration-200"
-                    onClick={closeMenu}
-                  >
-                    <Link href="/sign-up">Sign Up</Link>
-                  </Button>
-                </div>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="justify-center text-green-600 hover:bg-blue-300 hover:text-white transition-colors duration-200"
+                  onClick={closeMenu}
+                >
+                  <Link href={user ? Router.replace("/dashboard") : '/sign-up'}>
+                    {user ? 'Go to Dashboard' : 'Sign Up'}
+                  </Link>
+                </Button>
               )}
             </div>
           </div>
