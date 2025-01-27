@@ -5,28 +5,6 @@ import RevealonScroll from '../../RevealonScroll'
 import { motion } from "framer-motion";
 
 const CoreFeatures = () => {
-  const features = [
-    {
-      id: 1,
-      featureNumber: "Feature #1",
-      title: (
-        <>
-          Intelligent <br className="hidden lg:block" />
-          Health Metrics <br className="hidden lg:block" />
-          For All
-        </>
-      ),
-      description:
-        "Our platform employs state-of-the-art algorithms and machine learning to assist healthcare professionals in accurate diagnosis and treatment planning.",
-      stats: [
-        { value: "120", suffix: "%", label: "More Efficient" },
-        { value: "154.8", suffix: "M", label: "Patients Saved" },
-      ],
-      imageSrc: "https://i.ibb.co/DRWKYnb/Logo-Pillow.png",
-      buttonText: "Download The App",
-    },
-    // Add more feature objects if needed
-  ];
 
   return (
     <RevealonScroll>

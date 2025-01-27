@@ -7,6 +7,7 @@ import { AiOutlineClose } from 'react-icons/ai';
 import Button from './Button';
 import Link from 'next/link';
 import { useUserStore } from "@/stores/store";  // Assuming this is the correct store
+import { LayoutDashboard } from 'lucide-react';
 
 const Navbar = () => {
   const { user } = useUserStore();  // Get user from the store
@@ -57,8 +58,14 @@ const Navbar = () => {
       {/* Avatar or SignUp Button for Desktop */}
       <div className="hidden md:flex items-center gap-4">
         {user ? (
-          <div className="flex items-center gap-4">
-            <span className="text-black font-medium">Welcome, {user.name}</span>
+          <div className="flex items-center gap-6">
+            <div className="">
+              <Link href={"/dashboard"} className="flex flex-col items-center group">
+                <span className="p-3 rounded-full bg-white shadow-md group-hover:bg-blue-500 group-hover:text-white transition-colors duration-200">
+                  <LayoutDashboard className="w-6 h-6" />
+                </span>
+              </Link>
+             </div>
             <div className="h-[50px] w-[50px] rounded-full overflow-hidden bg-white p-1">
               <Link href="/profile">
                 {userImg ? (
