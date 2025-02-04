@@ -1,37 +1,61 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect } from 'react';
-import { GiHamburgerMenu } from 'react-icons/gi';
-import { RxAvatar } from 'react-icons/rx';
-import { AiOutlineClose } from 'react-icons/ai';
-import Button from './Button';
-import Link from 'next/link';
-import { useUserStore } from "@/stores/store";  // Assuming this is the correct store
-import { LayoutDashboard } from 'lucide-react';
+import { useState, useEffect, useRef } from "react"
+import { GiHamburgerMenu } from "react-icons/gi"
+import { RxAvatar } from "react-icons/rx"
+import { AiOutlineClose } from "react-icons/ai"
+import Button from "./Button"
+import Link from "next/link"
+import { useUserStore } from "@/stores/store"
+import { LayoutDashboard, User, LogOut } from "lucide-react"
 
 const Navbar = () => {
-  const { user } = useUserStore();  // Get user from the store
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [userImg, setUserImg] = useState(user?.avatar || '/default-avatar.png');
-  
+  const { user, signOut } = useUserStore()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [userImg, setUserImg] = useState(user?.avatar || "/default-avatar.png")
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const dropdownRef = useRef(null)
+  const timeoutRef = useRef(null)
+
   const handleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+    setIsMenuOpen(!isMenuOpen)
+  }
 
   useEffect(() => {
-    console.log('User object:', user); // Log the user object
-    if (user?.avatar) {
-      setUserImg(user.avatar);
-    } else {
-      setUserImg('/default-avatar.png');  // Ensure fallback image if no avatar is present
-    }
-  }, [user?.avatar]);  // Trigger effect when user.avatar changes
+    setUserImg(user?.avatar || "/default-avatar.png")
+  }, [user])
 
   const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
+    setIsMenuOpen(false)
+  }
 
-  const navLinks = ['Pricing', 'Features', 'About', 'Contact', 'Blog'];
+  const navLinks = ["Pricing", "Features", "About", "Contact", "Blog"]
+
+  const handleDropdownOpen = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+    setIsDropdownOpen(true)
+  }
+
+  const handleDropdownClose = () => {
+    timeoutRef.current = setTimeout(() => {
+      setIsDropdownOpen(false)
+    }, 800) // 300ms delay before closing
+  }
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [])
 
   return (
     <nav className="h-[72px] bg-[white] flex items-center justify-between px-6 md:pl-8 border-b-2 border-[#84CC16] relative z-[50]">
@@ -58,27 +82,46 @@ const Navbar = () => {
       {/* Avatar or SignUp Button for Desktop */}
       <div className="hidden md:flex items-center gap-4">
         {user ? (
-          <div className="flex items-center gap-6">
-            <div className="">
-              <Link href={"/dashboard"} className="flex flex-col items-center group">
-                <span className="p-3 rounded-full bg-white shadow-md group-hover:bg-blue-500 group-hover:text-white transition-colors duration-200">
-                  <LayoutDashboard className="w-6 h-6" />
-                </span>
-              </Link>
-             </div>
-            <div className="h-[50px] w-[50px] rounded-full overflow-hidden bg-white p-1">
-              <Link href="/profile">
-                {userImg ? (
-                  <img
-                    src={userImg}
-                    alt="Profile"
-                    className="h-full w-full object-cover rounded-full"
-                  />
-                ) : (
-                  <RxAvatar size={40} className="items-center" />
-                )}
-              </Link>
+          <div
+            className="flex items-center gap-6 relative"
+            ref={dropdownRef}
+            onMouseEnter={handleDropdownOpen}
+            onMouseLeave={handleDropdownClose}
+          >
+            <div className="h-[50px] w-[50px] rounded-full overflow-hidden bg-white p-1 cursor-pointer">
+              {userImg ? (
+                <img
+                  src={userImg || "/placeholder.svg"}
+                  alt="Profile"
+                  className="h-full w-full object-cover rounded-full"
+                />
+              ) : (
+                <RxAvatar size={40} className="items-center" />
+              )}
             </div>
+            {isDropdownOpen && (
+              <div
+                className="absolute right-0 top-[60px] w-48 bg-white rounded-md shadow-lg py-1 z-10"
+                onMouseEnter={handleDropdownOpen}
+                onMouseLeave={handleDropdownClose}
+              >
+                <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <LayoutDashboard className="inline-block w-4 h-4 mr-2" />
+                  Dashboard
+                </Link>
+                <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <User className="inline-block w-4 h-4 mr-2" />
+                  Profile
+                </Link>
+                <button
+                  onClick={signOut}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  <LogOut className="inline-block w-4 h-4 mr-2" />
+                  Sign Out
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <Button
@@ -98,14 +141,8 @@ const Navbar = () => {
 
       {/* Collapsible Mobile Menu */}
       {isMenuOpen && (
-        <div
-          className="fixed top-0 left-0 w-full h-screen bg-white z-[100]"
-          onClick={closeMenu}
-        >
-          <div
-            className="absolute top-0 right-0 m-4 cursor-pointer"
-            onClick={handleMenu}
-          >
+        <div className="fixed top-0 left-0 w-full h-screen bg-white z-[100]" onClick={closeMenu}>
+          <div className="absolute top-0 right-0 m-4 cursor-pointer" onClick={handleMenu}>
             <AiOutlineClose className="text-2xl text-gray-800" />
           </div>
           <div className="flex flex-col items-center mt-12">
@@ -119,20 +156,34 @@ const Navbar = () => {
                 {link}
               </Link>
             ))}
-            <div className="flex justify-center mt-4">
+            <div className="flex flex-col items-center mt-4">
               {user ? (
-                <Link href="/profile">
-                  <div className="flex items-center gap-4">
-                    <span className="text-black font-medium">Welcome, {user.name}</span>
-                    <div className="h-[60px] w-[60px] rounded-full overflow-hidden bg-white p-1">
-                      <img
-                        src={user.avatar || '/default-avatar.png'}
-                        alt="Profile"
-                        className="h-full w-full object-cover rounded-full"
-                      />
+                <>
+                  <Link href="/profile" className="mb-2">
+                    <div className="flex items-center gap-4">
+                      <span className="text-black font-medium">Welcome, {user.name}</span>
+                      <div className="h-[60px] w-[60px] rounded-full overflow-hidden bg-white p-1">
+                        <img
+                          src={user.avatar || "/default-avatar.png"}
+                          alt="Profile"
+                          className="h-full w-full object-cover rounded-full"
+                        />
+                      </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                  <Link href="/dashboard" className="py-2 text-gray-700 hover:text-blue-600">
+                    <LayoutDashboard className="inline-block w-4 h-4 mr-2" />
+                    Dashboard
+                  </Link>
+                  <Link href="/profile" className="py-2 text-gray-700 hover:text-blue-600">
+                    <User className="inline-block w-4 h-4 mr-2" />
+                    Profile
+                  </Link>
+                  <button onClick={signOut} className="py-2 text-gray-700 hover:text-blue-600">
+                    <LogOut className="inline-block w-4 h-4 mr-2" />
+                    Sign Out
+                  </button>
+                </>
               ) : (
                 <Button
                   variant="primary"
@@ -148,7 +199,8 @@ const Navbar = () => {
         </div>
       )}
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar
+

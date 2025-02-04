@@ -30,7 +30,7 @@ export default function SignInForm() {
       identifier: "",
       password: "",
     },
-  });
+  }); 
 
   const onSubmit = async (data) => {
     console.log(data); // TODO: Remove this line
