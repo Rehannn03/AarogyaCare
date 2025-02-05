@@ -52,7 +52,7 @@ export default function SignInForm() {
         if (user.role === 'admin' || user.role === 'doctor') {
           router.replace("/dashboard");
         } else if (user.role === 'patient') {
-          router.replace("/my-appointments");
+          router.replace("/dashboard");
         } else {
           toast({
             title: "Unexpected Role",

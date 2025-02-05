@@ -1,3 +1,8 @@
+import createNextIntlPlugin from 'next-intl/plugin';
+ 
+const withNextIntl = createNextIntlPlugin();
+
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 //TODO: REMOVE THIS IMAGE DOMAIN OF CDN.PFPS.GG
@@ -7,4 +12,4 @@ const nextConfig = {
     
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);
