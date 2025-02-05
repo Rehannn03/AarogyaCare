@@ -1,0 +1,29 @@
+{
+    "HomePage":{
+        "Title":{
+        "title1":"Where AI Meets",
+         "title2":"Telehealth &",
+          "title3":"Telemedicine"
+    }
+    ,
+    "SubTitle":{
+        "sub1":"We're pioneering the future of healthcare with cutting-edge telehealth and telemedicine solutions.",
+        "sub2":"Trusted By 2.5M+",
+        "sub3":"AI/ML Technology"
+    },
+    "Button":{
+        "button1":"Get Started"
+    }
+},
+    "NavBar":{
+        "pricing": "Pricing",
+        "features": "Features",
+        "about": "About",
+        "contact": "Contact",
+        "blog": "Blog",
+        "dashboard": "Dashboard",
+        "profile": "Profile",
+        "signOut": "Sign Out",
+        "signUp": "Sign Up"
+    }
+}
