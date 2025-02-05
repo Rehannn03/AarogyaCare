@@ -3,41 +3,41 @@ import React from "react";
 
 function CTA() {
   return (
-    <section class="relative pt-24 lg:py-0 bg-black overflow-hidden w-full">
+    <section className="relative pt-24 lg:py-0 bg-black overflow-hidden w-full">
       <Image
-        class="absolute bottom-0 right-0"
+        className="absolute bottom-0 right-0"
         src="/appointment/gradient.svg"
         alt=""
         fill
       />
-      <div class="relative z-10 container px-4 mx-auto">
-        <div class="flex flex-wrap items-center">
-          <div class="w-full md:w-1/2 p-8">
-            <div class="md:max-w-lg">
-              <h2 class="mb-6 text-6xl md:text-7xl text-white font-bold tracking-px-n leading-tight">
+      <div className="relative z-10 container px-4 mx-auto">
+        <div className="flex flex-wrap items-center">
+          <div className="w-full md:w-1/2 p-8">
+            <div className="md:max-w-lg">
+              <h2 className="mb-6 text-6xl md:text-7xl text-white font-bold tracking-px-n leading-tight">
                 Consult with a Doctor
               </h2>
-              <p class="mb-8 text-white text-opacity-70 font-medium md:max-w-md">
+              <p className="mb-8 text-white text-opacity-70 font-medium md:max-w-md">
                 Book an appointment with a doctor of your choice. Get a
                 consultation at your convenience.
               </p>
-              <div class="flex flex-wrap -m-2">
-                <div class="w-full md:w-auto p-2">
+              <div className="flex flex-wrap -m-2">
+                <div className="w-full md:w-auto p-2">
                   <button
-                    class="py-4 px-6 w-full font-medium rounded-xl shadow-6xl focus:ring focus:ring-gray-300 bg-white hover:bg-gray-100 transition ease-in-out duration-200"
+                    className="py-4 px-6 w-full font-medium rounded-xl shadow-6xl focus:ring focus:ring-gray-300 bg-white hover:bg-gray-100 transition ease-in-out duration-200"
                     type="button"
                   >
                     See Plans
                   </button>
                 </div>
-                <div class="w-full md:w-auto p-2">
+                <div className="w-full md:w-auto p-2">
                   <button
-                    class="inline-flex items-center justify-center py-4 px-6 w-full text-white font-medium border border-white border-opacity-20 hover:border-opacity-40 rounded-xl focus:ring focus:ring-white focus:ring-opacity-40 bg-transparent hover:bg-black hover:bg-opacity-5 transition ease-in-out duration-200"
+                    className="inline-flex items-center justify-center py-4 px-6 w-full text-white font-medium border border-white border-opacity-20 hover:border-opacity-40 rounded-xl focus:ring focus:ring-white focus:ring-opacity-40 bg-transparent hover:bg-black hover:bg-opacity-5 transition ease-in-out duration-200"
                     type="button"
                     
                   >
                     <svg
-                      class="mr-2.5"
+                      className="mr-2.5"
                       width="19"
                       height="18"
                       viewbox="0 0 19 18"
@@ -58,8 +58,8 @@ function CTA() {
               </div>
             </div>
           </div>
-          <div class="w-full md:w-1/2 px-8 pt-12">
-            <img class="mx-auto" src="/appointment/doctor.png" alt="" />
+          <div className="w-full md:w-1/2 px-8 pt-12">
+            <img className="mx-auto" src="/appointment/doctor.png" alt="" />
           </div>
         </div>
       </div>

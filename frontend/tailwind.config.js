@@ -17,6 +17,10 @@ module.exports = {
       },
     },
     extend: {
+        fontFamily:{
+          title:["Nunito","sans-serif"],
+        },
+      
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -73,5 +77,21 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"), // Include the animation plugin
+    function ({ addUtilities }) {
+      addUtilities({
+        '.no-drag': {
+          'user-drag': 'none',
+          '-webkit-user-drag': 'none',
+        },
+        '.no-select': {
+          'user-select': 'none',
+          '-moz-user-select': 'none',
+          '-webkit-user-select': 'none',
+          '-ms-user-select': 'none',
+        },
+      });
+    },
+  ],
 }

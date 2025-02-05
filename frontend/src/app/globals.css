@@ -1,6 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+*{
+  -ms-overflow-style: none;
+}
+::-webkit-scrollbar {
+  display: none;
+}
 
 @layer base {
   :root {
@@ -69,7 +78,7 @@
 }
 
 ::selection {
-  background-color: hsl(213 10% 80%);
+  color:#84CC16 ;
 }
 
 .fc-today-button::first-letter {

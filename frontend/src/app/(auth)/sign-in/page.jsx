@@ -30,7 +30,7 @@ export default function SignInForm() {
       identifier: "",
       password: "",
     },
-  });
+  }); 
 
   const onSubmit = async (data) => {
     console.log(data); // TODO: Remove this line
@@ -48,15 +48,7 @@ export default function SignInForm() {
       const userData = await apiClient.get("/users/profile");
       const user = userData.data.data.user;
       update(user);
-
-      if (user.profile.age === 0) {
-        toast({
-          title: "Incomplete Profile",
-          description: "Please fill in your details first.",
-          variant: "destructive",
-        });
-        router.replace("/profile");
-      } else {
+    
         if (user.role === 'admin' || user.role === 'doctor') {
           router.replace("/dashboard");
         } else if (user.role === 'patient') {
@@ -67,7 +59,7 @@ export default function SignInForm() {
             description: "Your user role is not recognized.",
             variant: "destructive",
           });
-        }
+        
       }
     } catch (error) {
       const axiosError = error;
@@ -86,7 +78,7 @@ export default function SignInForm() {
         <div className="text-center">
           {/* TODO: Add the website name */}
           <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
-            Welcome Back to Website Name
+            Welcome Back to MEDTECH
           </h1>
           <p className="mb-4">Sign in to continue your meds</p>
         </div>

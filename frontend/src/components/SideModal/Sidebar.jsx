@@ -23,20 +23,41 @@ function Sidebar() {
       name: "Dashboard",
       icon: <IoStatsChart className="w-5 h-5" />,
       link: "/dashboard",
-      allowed: ["admin", "doctor"],
+      allowed: ["admin", "doctor", "patient"],
     },
+    // Doctor & Admin Items
     {
       name: "My Appointments",
       icon: <CiCalendarDate className="w-5 h-5" />,
       link: "/dashboard/my-appointments",
-      allowed: ["doctor"],
+      allowed: ["doctor", "patient"],
     },
     {
       name: "Profile",
       icon: <FaUser className="w-5 h-5" />,
       link: "/dashboard/profile",
-      allowed: ["doctor"],
+      allowed: ["doctor", "patient"],
     },
+    // Patient-specific Items
+    {
+      name: "Book Appointment",
+      icon: <CiCalendarDate className="w-5 h-5" />,
+      link: "/dashboard/book-appointment",
+      allowed: ["patient"],
+    },
+    {
+      name: "Medical History",
+      icon: <FaBarsProgress className="w-5 h-5" />,
+      link: "/dashboard/medical-history",
+      allowed: ["patient"],
+    },
+    {
+      name: "Prescriptions",
+      icon: <FaUserDoctor className="w-5 h-5" />,
+      link: "/dashboard/prescriptions",
+      allowed: ["patient"],
+    },
+    // Admin-specific Items
     {
       name: "Analytics",
       icon: <FaBarsProgress className="w-5 h-5" />,

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React from "react";
 import { useUserStore } from "@/stores/store";
 import { toast } from "@/components/ui/use-toast";
@@ -10,6 +10,16 @@ import { FaUserDoctor } from "react-icons/fa6";
 import Calender from "@/components/dashboard/Calendar";
 import Notification from "@/components/dashboard/Notification";
 import loader from "/public/loader.svg";
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Heart, Activity, Droplet } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const page = () => {
   const { user } = useUserStore();
@@ -69,6 +79,7 @@ const page = () => {
   };
 
   useEffect(() => {
+    console.log("user dashboard Azlaan", user)
     if (user) {
       setLoading(true);
       getStats();
@@ -76,6 +87,11 @@ const page = () => {
       setLoading(false);
     }
   }, [user]);
+
+  if (user === null || user.role === "patient") {
+    return <PatientDashboard />;
+  }
+
   return (
     <div className="mt-10 px-12 mb-12">
       <Stats
@@ -88,28 +104,28 @@ const page = () => {
           <img src={loader.src} alt="loader" className="w-20 h-20" />
           <h2 className="text-2xl font-semibold text-gray-700">Wait while we load your appointments...</h2>
         </div>
-      ): (
-      <div className="grid grid-cols-1 xl:grid-cols-2 mt-3 gap-4">
-        <div className="p-8 shadow-2xl rounded-xl">
-          <Calender
-            events={allAppointments.map((el) => {
-              const date = new Date(el.date);
-              const year = date.getFullYear();
-              const month = String(date.getMonth() + 1).padStart(2, "0");
-              const day = String(date.getDate()).padStart(2, "0");
-              const formattedDate = `${year}-${month}-${day}`;
-              return {
-                title: `${
-                  user?.role === "doctor" ? el.patient.name : el.doctorInfo.name
-                }`,
-                date: formattedDate,
-              };
-            })}
-          />
+      ) : (
+        <div className="grid grid-cols-1 xl:grid-cols-2 mt-3 gap-4">
+          <div className="p-8 shadow-2xl rounded-xl">
+            <Calender
+              events={allAppointments.map((el) => {
+                const date = new Date(el.date);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, "0");
+                const day = String(date.getDate()).padStart(2, "0");
+                const formattedDate = `${year}-${month}-${day}`;
+                return {
+                  title: `${
+                    user?.role === "doctor" ? el.patient.name : el.doctorInfo.name
+                  }`,
+                  date: formattedDate,
+                };
+              })}
+            />
+          </div>
+          <Notification appointment={allAppointments} />
         </div>
-        <Notification appointment={allAppointments} />
-      </div>
-  )}
+      )}
     </div>
   );
 };
@@ -169,3 +185,119 @@ const StatsCard = ({ title, description, value, icon }) => {
     </li>
   );
 };
+
+const healthMetrics = [
+  {
+    icon: <Heart className="h-6 w-6" />,
+    title: "Heart Rate",
+    value: "80",
+    unit: "BPM",
+    bgColor: "bg-[#FFD700]/10",
+  },
+  {
+    icon: <Activity className="h-6 w-6" />,
+    title: "Blood Pressure",
+    value: "120/80",
+    unit: "mmHG",
+    bgColor: "bg-[#40E0D0]/10",
+  },
+  {
+    icon: <Droplet className="h-6 w-6" />,
+    title: "Glucose Level",
+    value: "60-80",
+    unit: "mg/dl",
+    bgColor: "bg-[#FF7F50]/10",
+  },
+]
+ function PatientDashboard( ) {
+  return (
+    <div className="container mx-auto p-6 space-y-8">
+      {/* Hero Section */}
+      <div className="rounded-lg bg-white p-6 flex justify-between items-center">
+        <div className="space-y-4">
+          <h1 className="text-3xl font-bold">Welcome !</h1>
+          <p className="text-gray-600">Get Your Latest Update for the Last 7 days</p>
+          <Button variant="outline">
+            Connect to Doctor →
+          </Button>
+        </div>
+        <img 
+          src="" 
+          alt="Medical professionals illustration"
+          className="h-48 object-contain"
+        />
+      </div>
+
+      {/* Health Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {healthMetrics.map((metric, index) => (
+          <Card key={index} className={`p-6 ${metric.bgColor}`}>
+            <div className="flex items-center space-x-4">
+              <div className="p-2 bg-white rounded-lg">
+                {metric.icon}
+              </div>
+              <div>
+                <h3 className="font-medium text-gray-600">{metric.title}</h3>
+                <p className="text-2xl font-bold">
+                  {metric.value} <span className="text-sm text-gray-600">{metric.unit}</span>
+                </p>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Health Trends */}
+      <Card className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold">My Health Weekly Trends</h2>
+          <div className="flex items-center space-x-4">
+            <div className="flex space-x-2">
+              <div className="flex items-center">
+                <div className="h-3 w-3 rounded-full bg-primary mr-2" />
+                <span className="text-sm">This Week</span>
+              </div>
+              <div className="flex items-center">
+                <div className="h-3 w-3 rounded-full bg-gray-200 mr-2" />
+                <span className="text-sm">Last Week</span>
+              </div>
+            </div>
+            <Select defaultValue="weekly">
+              <SelectTrigger className="w-[120px]">
+                <SelectValue placeholder="Select view" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="daily">Daily</SelectItem>
+                <SelectItem value="weekly">Weekly</SelectItem>
+                <SelectItem value="monthly">Monthly</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="h-[300px] w-full bg-gray-50 rounded-lg" />
+      </Card>
+
+      {/* Appointments */}
+      <Card className="p-6">
+        <h2 className="text-xl font-semibold mb-4">Scheduled Appointments</h2>
+        <div className="space-y-4">
+          <div className="border rounded-lg p-4">
+            <div className="text-sm text-gray-600">Routine Checkup</div>
+            <div className="flex justify-between items-center mt-2">
+              <div>
+                <h3 className="font-medium">Dr. Damian Lewis - Standard Consult</h3>
+                <p className="text-sm text-gray-600">10:30am - 11:00am</p>
+              </div>
+              <div className="text-right">
+                <div className="text-sm text-emerald-500">Starts in 35 m</div>
+                <Button variant="outline" size="sm" className="mt-2">
+                  Edit Consult →
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Card>
+    </div>
+  )
+}

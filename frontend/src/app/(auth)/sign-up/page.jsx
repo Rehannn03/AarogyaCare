@@ -55,7 +55,7 @@ const page = () => {
         title: "Success",
         description: "Sign Up Successful",
       });
-      router.replace(`/appointment`);
+      router.replace(`/sign-in`);
       setIsSubmitting(false);
     } catch (error) {
       const errorMessage = error.response?.data?.message || "Sign Up Failed";
@@ -69,11 +69,11 @@ const page = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-800">
+    <div className="flex justify-center items-center min-h-screen bg-gray-800 overflow-hidden">
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
-            Website Name
+            MedTech
           </h1>
           <p className="mb-4">
             Sign up to consult a doctor via video call or access all your medical reports in one place.
