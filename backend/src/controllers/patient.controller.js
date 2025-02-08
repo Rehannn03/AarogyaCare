@@ -5,20 +5,36 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import Appointment from "../model/appointments.model.js";
 import Report from "../model/reports.model.js";
 import Consultation from "../model/consultation.model.js";
+import { uploadToPinata } from "../utils/pinata.js";
+import mongoose from "mongoose";
 const scheduleAppointment = asyncHandler(async(req,res)=>{
-    const {doctorId,date,time,day,symptoms,note}=req.body
+    const {doctorId,date,time,day,symptoms,note,reportIds}=req.body
+    const patientId=req.user._id
     const appointment=await Appointment.create({
-        patientId:req.user._id,
+        patientId,
         doctorId,
         date,
         time,
         day,
         symptoms,
-        note
+        note,
+        hasReports:reportIds.length>0?true:false
     })
-
+    console.log(req.body);
     if(!appointment){
         throw new ApiError(400,'Appointment not created')
+    }
+
+    if (reportIds?.length > 0) {
+        const objectIds = reportIds.map(id => new mongoose.Types.ObjectId(id));
+    
+        await Report.updateMany(
+            { _id: { $in: objectIds }, patientId },
+            {
+                $set: { appointmentId: appointment._id },
+                $addToSet: { "reports.$[].sharedWithDoctors": { doctorId, sharedAt: new Date() } } 
+            }
+        );
     }
 
     return res
@@ -92,30 +108,63 @@ const viewAppointments=asyncHandler(async(req,res)=>{
 })
 
 const addReports=asyncHandler(async(req,res)=>{
-    const {title,description}=req.body
-    const pdfPath=req.file?.path
-    const reportPdf=await uploadOnCloudinary(pdfPath)
-    const report=await Report.create({
-        patientId:req.user._id,
-        reports:[{
-            title,
-            description,
-            fileURL:reportPdf?.secure_url
-        }],
-    })
+    const { title, description, details } = req.body
+    console.log(req.body);
+    if (!req.file) {
+        throw new ApiError(400, 'No file uploaded')
+    }
+    console.log(req.file);
+    const fileHash = await uploadToPinata(req.file)
+
+
+
+    const report = await Report.findOneAndUpdate(
+        { patientId: req.user._id },
+        {
+            $push: {
+                reports: {
+                    title,
+                    description,
+                    fileHash,
+                    fileType: req.file.mimetype,
+                    size: req.file.size,
+                }
+            },
+            $set: { 
+                details,
+            }
+        },
+        { 
+            upsert: true, 
+            new: true 
+        }
+    )
 
     if(!report){
-        throw new ApiError(400,'Report not created')
+        const report =await Report.create({
+            patientId:req.user._id,
+            reports:[{
+                title,
+                description,
+                fileHash,
+                fileType:req.file.mimetype,
+                size:req.file.size
+            }],
+            details
+        })
+
+        return res
+        .status(201)
+        .json(
+            new ApiResponse(201, report, 'Report uploaded successfully')
+        )
     }
 
     return res
-    .status(201)
-    .json(
-        new ApiResponse(201,{
-            message:'Report created successfully',
-            report
-        })
-    )
+        .status(201)
+        .json(
+            new ApiResponse(201, report, 'Report uploaded successfully')
+        )
 
 })
 
@@ -185,64 +234,6 @@ const viewConsultations=asyncHandler(async(req,res)=>{
     )
 })
 
-const uploadReports=asyncHandler(async(req,res)=>{
-    const user=req.user.id
-    const {title,description,details}=req.body
-
-    const report=await Report.findOne({patientId:user})
-    const pdfPath=req.file?.path
-    const reportPdf=await uploadOnCloudinary(pdfPath)
-
-    if(!report){
-        const newReport=await Report.create({
-            patientId:user,
-            reports:[{
-                title,
-                description,
-                fileURL:reportPdf?.secure_url
-            }],
-            details
-        })
-
-        if(!newReport){
-            throw new ApiError(400,'Report not created')
-        }
-
-        return res
-        .status(201)
-        .json(
-            new ApiResponse(201,{
-                message:'Report created successfully',
-                newReport
-            })
-        ) 
-    }
-
-    const newReport=await Report.create({
-        patientId:user,
-        reports:[{
-            title,
-            description,
-            fileURL:reportPdf?.secure_url
-        }],
-        details
-    })
-
-    if(!newReport){
-        throw new ApiError(400,'Report not created')
-    }
-
-    return res
-    .status(201)
-    .json(
-        new ApiResponse(201,{
-            message:'Report created successfully',
-            newReport
-        })
-    )
-
-})
-
 const viewReports=asyncHandler(async(req,res)=>{
     const user=req.user.id
     const report=await Report.findOne({patientId:user})
@@ -283,7 +274,6 @@ export{
     viewAppointments,
     addReports,
     viewConsultations,
-    uploadReports,
     viewReports,
     deleteReport
 }

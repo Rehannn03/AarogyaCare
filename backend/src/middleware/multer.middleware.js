@@ -11,4 +11,8 @@ const storage = multer.diskStorage({
   },
 });
 
+const pinataStorage=multer.memoryStorage()
+
+export const pinataUpload=multer({storage:pinataStorage})
+
 export const upload = multer({ storage });

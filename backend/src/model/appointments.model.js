@@ -37,6 +37,10 @@ const appointmentSchema=new Schema({
         type:String,
         default:''
     },
+    hasReports: {
+        type: Boolean,
+        default: false
+    },
     link:{
         type:String,
         default:''
