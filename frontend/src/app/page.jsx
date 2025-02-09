@@ -47,7 +47,7 @@ export default function Home() {
     isLoading,
     stop,
     reload,
-    error} =useChat({api:"/api/gemini"});
+    error} =useChat({api:"/apiv1/gemini"});
     const scrollRef=useRef(null)
 
     useEffect(()=>{

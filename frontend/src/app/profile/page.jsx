@@ -20,57 +20,7 @@ import { InputTags } from "@/components/appointments";
 
 const Profile = () => {
   
-  // const { toast } = useToast();
-  // const [allergies, setAllergies] = useState([]);
-
-  // const [formData, setFormData] = useState({
-  //   uid: "",
-  //   name: "",
-  //   email: "",
-  //   role: "",
-  //   age: "",
-  //   contact: "",
-  //   address: "",
-  //   gender: "",
-  //   city: "",
-  //   existingDiseases: [],
-  //   allergies: [],
-  //   isDiabetic: "",
-  //   isPregnant: "",
-  //   isBP: "",
-  //   profilePicture: "",
-  // });
-
-  // const [isEditing, setIsEditing] = useState(false);
-  // const [newProfilePicture, setNewProfilePicture] = useState(null);
-  // const fileInputRef = useRef(null);
-
-  // useEffect(() => {
-  //   if (!user) {
-  //     fetchAndSetUserStore((user) => {
-  //       setFormData({
-  //         uid: user._id || formData.uid,
-  //         name: user.name || formData.name,
-  //         email: user.email,
-  //         age: user.profile.age || formData.age,
-  //         contact: user.profile.contact || formData.contact,
-  //         address: user.profile.address || formData.address,
-  //         gender: user.profile.gender || formData.gender,
-  //         city: user.profile.city || formData.city,
-  //         existingDiseases:
-  //           user.profile.existingDiseases || formData.existingDiseases,
-  //         allergies: user.profile.allergies || formData.allergies,
-  //         isDiabetic: user.profile.isDiabetic || formData.isDiabetic,
-  //         isPregnant: user.profile.isPregnant || formData.isPregnant,
-  //         isBP: user.profile.isBP || formData.isBP,
-  //         profilePicture:
-  //           user.avatar ||
-  //           "https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account",
-  //       });
-  //     });
-  //   }
-  // }, [user]);
-
+  
   const [selectedImg,setSelectedImg]=useState("")
   const [userImg, setUserImg] = useState(null);
   const[preview,setPreview]=useState(false)
@@ -119,17 +69,6 @@ const Profile = () => {
   }, [user]);
 
 
-  // const handleImageUpload = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       setNewProfilePicture(reader.result);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
-
   const triggerFileInput = () => {
     setPreview(true)
       fileInputRef.current.click()
@@ -139,22 +78,7 @@ const Profile = () => {
   const handleEditClick = async () => {
     if (isEditing) {
       try {
-        // Create FormData instance
-        // const formDataToSend = new FormData();
-        // // Append non-file fields
-        // formDataToSend.append("age", age);
-        // formDataToSend.append("contact", contact);
-        // formDataToSend.append("address", address);
-        // formDataToSend.append("gender", gender);
-        // formDataToSend.append("city", city);
-        // formDataToSend.append(
-        //   "existingDiseases",
-        //   existingDiseases
-        // );
-        // formDataToSend.append("allergies", allergies);
-        // formDataToSend.append("isDiabetic", isDiabetic);
-        // formDataToSend.append("isPregnant", isPregnant);
-        // formDataToSend.append("isBP", isBP);
+       
         const formDataToSend = {
           age,
           contact,
@@ -167,28 +91,7 @@ const Profile = () => {
           isPregnant,
           isBP,
         };
-        // console.log(formDataToSend)
-        // Handle profile picture
-        // if (newProfilePicture) {
-        //   const response = await apiClient.patch("/users/profile", 
-            
-        //   );
-        //   // const blob = await response.blob();
-        //   // const file = new File([blob], "profile-picture.jpg", {
-        //   //   type: blob.type,
-        //   // });
-        //   // formDataToSend.append("avatar", file);
-        // } else if (profilePicture) {
-        //   // If no new picture, append the existing picture URL or identifier
-        //   formDataToSend.append("avatar", profilePicture);
-        // }
-
-        // Debugging: Log FormData entries
-        // for (let pair of formDataToSend.entries()) {
-        //   console.log(`${pair[0]}: ${pair[1]}`);
-        // }
-
-        // Send the request
+       
         await apiClient.patch("/users/profile", formDataToSend);
 
         toast({
@@ -480,7 +383,7 @@ const Profile = () => {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            {isPregnant === "true" ? (
+            {isPregnant === "true" ?   (
               <FaCheckCircle className="h-6 w-6 text-green-500" />
             ) : (
               <FaTimesCircle className="h-6 w-6 text-red-500" />

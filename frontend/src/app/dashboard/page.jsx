@@ -37,7 +37,11 @@ const page = () => {
       } else if (user.role === "admin") {
         url = "/admin/earnings";
       }
+    
       const response = await apiClient.get(url);
+      console.log(url);
+      
+      
       if (response.status === 200) {
         setEarning(response.data.data.earnings);
         setConsultations(response.data.data.completed);
@@ -61,6 +65,9 @@ const page = () => {
       } else if (user.role === "admin") {
         url = "/admin/getAppointments";
       }
+      else{
+        return;
+      }
       const response = await apiClient.get(url);
       if (response.status === 200) {
         setAllAppointments(response.data.data.appointments);
@@ -79,7 +86,6 @@ const page = () => {
   };
 
   useEffect(() => {
-    console.log("user dashboard Azlaan", user)
     if (user) {
       setLoading(true);
       getStats();

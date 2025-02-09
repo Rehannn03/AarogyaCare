@@ -13,7 +13,8 @@ interface UserProfile {
 interface User {
   email: string;
   name: string;
-  profile: UserProfile;
+  profile?: UserProfile;
+  role:string
 }
 
 // Define the structure of the user store
