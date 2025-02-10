@@ -37,6 +37,9 @@ const page = () => {
       } else if (user.role === "admin") {
         url = "/admin/earnings";
       }
+      else{
+        return
+      }
     
       const response = await apiClient.get(url);
       console.log(url);

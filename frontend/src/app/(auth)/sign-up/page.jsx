@@ -26,22 +26,13 @@ const page = () => {
   const debounced = useDebounceCallback(setName, 300);
   const { toast } = useToast();
   const router = useRouter();
-  const { user, update } = useUserStore();
+  const {update } = useUserStore();
 
-  const form = useForm({
-    resolver: zodResolver(signUpSchema),
-    defaultValues: {
-      name: "",
-      password: "",
-      email: "",
-      role: "patient", // Default role
-    },
-  });
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      const { name, role } = data;
+      const { name,email,password, role } = data;
       const tempProfile = { name, role };
       update(tempProfile);
       console.log("This is raw data from form: ", data);
@@ -72,6 +63,7 @@ const page = () => {
             height={1000}
             width={1000}
             className="mb-12 h-10 w-fit"
+            alt="doctor Image"
             priority
           />
             <section className="mb-5 space-y-4 ">

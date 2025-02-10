@@ -56,7 +56,7 @@ const PatientForm = () => {
     setIsSubmitting(true);
     try {
       const { name,email,password, role } = data;
-      const tempProfile = { name, role,email};
+      const tempProfile = { name,password,email, role};
       update(tempProfile);
       console.log("This is raw data from form: ", data);
       const response = await apiClient.post("/users/register", { ...data });

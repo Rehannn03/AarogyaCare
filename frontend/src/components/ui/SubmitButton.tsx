@@ -1,5 +1,4 @@
 import Image from "next/image";
-
 import { Button } from "@/components/ui/button";
 
 interface ButtonProps {
@@ -13,12 +12,12 @@ const SubmitButton = ({ isLoading, className, children }: ButtonProps) => {
     <Button
       type="submit"
       disabled={isLoading}
-      className={className ?? "shad-primary-btn w-full"}
+      className={`shad-primary-btn w-full ${className ?? ""}`}
     >
       {isLoading ? (
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 opacity-100">
           <Image
-            src="/assets/icons/loader.svg"
+            src="/loader.svg" // Ensure loader.svg is in `public/`
             alt="loader"
             width={24}
             height={24}

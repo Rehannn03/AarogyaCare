@@ -1,125 +1,95 @@
-"use client";
+'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import * as z from "zod";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
+import { signInSchema } from "@/schemas/signInSchema";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
-import { signInSchema } from "@/schemas/signInSchema";
+import { Input } from "@/components/ui/input";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
+import SubmitButton from "@/components/ui/SubmitButton";
 import apiClient from "@/api-client/apiClient";
-import { useUserStore } from "@/stores/store";
+import Link from "next/link";
+import Image from "next/image";
 
-export default function SignInForm() {
+const SignInForm = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const { update } = useUserStore();
   const { toast } = useToast();
 
   const form = useForm({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      identifier: "",
+      email: "",
       password: "",
     },
-  }); 
+  });
 
   const onSubmit = async (data) => {
-    console.log(data); // TODO: Remove this line
+    console.log("Submitting Form...");  // Check if function is called
+    setIsSubmitting(true);
     try {
-      const bodyData = {
-        email: data.identifier,
-        password: data.password,
-      };
-      const response = await apiClient.post("/users/login", bodyData);
-      toast({
-        title: "Success",
-        description: response.data.message,
-      });
-
-      const userData = await apiClient.get("/users/profile");
-      const user = userData.data.data.user;
-      update(user);
+      console.log("Form Data:", data);
+      const response = await apiClient.post("/users/login", data);
+      console.log("API Response:", response);
     
-        if (user.role === 'admin' || user.role === 'doctor') {
-          router.replace("/dashboard");
-        } else if (user.role === 'patient') {
-          router.replace("/dashboard");
-        } else {
-          toast({
-            title: "Unexpected Role",
-            description: "Your user role is not recognized.",
-            variant: "destructive",
-          });
-        
-      }
+      toast({ title: "Success", description: "Sign In Successful" });
+      router.replace("/dashboard");
     } catch (error) {
-      const axiosError = error;
-      let errorMessage = axiosError.response?.data.message;
-      toast({
-        title: "Sign In Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      console.error("Login Error:", error);
+      const errorMessage = error.response?.data?.message || "Sign In Failed";
+      toast({ title: "Sign In Failed", description: errorMessage, variant: "destructive" });
     }
+    setIsSubmitting(false);
   };
+  
+  
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-800">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          {/* TODO: Add the website name */}
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
-            Welcome Back to MEDTECH
-          </h1>
-          <p className="mb-4">Sign in to continue your meds</p>
-        </div>
+    <div className="flex h-screen bg-slate-200 font-title">
+      <section className="container my-auto max-w-[496px]">
+        <Image src="/ArogayaCareLogo.svg" height={1000} width={1000} className="mb-12 h-10 w-fit" alt="Logo" priority />
+        <section className="mb-5 space-y-4">
+          <h1 className="text-[37px] font-bold md:text-[40px]">Welcome Back!</h1>
+          <p className="text-dark-700">Sign in to continue.</p>
+        </section>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              name="identifier"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email/Username</FormLabel>
-                  <Input {...field} />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="password"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Password</FormLabel>
-                  <Input type="password" {...field} />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button className="w-full" type="submit">
-              Sign In
-            </Button>
+        <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="space-y-6">
+            <FormField control={form.control} name="email" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="example@gmail.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <FormField control={form.control} name="password" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input type="password" placeholder="Enter your password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+
+            <SubmitButton isLoading={isSubmitting}>Sign In</SubmitButton>
           </form>
         </Form>
+
         <div className="text-center mt-4">
           <p>
-            Not a member yet?{" "}
-            <Link href="/sign-up" className="text-blue-600 hover:text-blue-800">
-              Sign up
-            </Link>
+            New User? <Link href="/sign-up" className="text-[#7A5CFA] hover:text-blue-800">Sign Up</Link>
           </p>
         </div>
-      </div>
+      </section>
+
+      <Image src="/sign-in.jpg" height={1000} width={1000} alt="Sign In Image" className="max-w-[50%]" />
     </div>
   );
-}
+};
+
+export default SignInForm;

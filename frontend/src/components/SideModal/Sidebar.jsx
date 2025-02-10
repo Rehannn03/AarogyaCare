@@ -5,6 +5,7 @@ import { CiCalendarDate } from "react-icons/ci";
 import { FaBarsProgress, FaUserDoctor } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
 import { useUserStore } from "@/stores/store";
+import Image from "next/image";
 
 function Sidebar() {
   const [stateContext, setStateContext] = React.useState(0);
@@ -85,6 +86,17 @@ function Sidebar() {
   ];
   return (
     <ul className="mb-4 flex flex-col gap-2 overflow-auto pb-6">
+      <div className="flex justify-center">
+        <Link href="/">
+                    <Image
+                      src="/ArogayaCareLogo.svg"
+                      height={1000}
+                      width={1000}
+                      className="mb-12 h-10 w-fit"
+                      priority
+                    />
+        </Link>
+         </div>
       {menuItems.map((item, index) => (
         <li
           key={index}

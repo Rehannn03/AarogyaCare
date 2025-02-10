@@ -132,12 +132,18 @@ const Navbar = () => {
   return (
     <nav className="h-[72px] bg-[white] flex items-center justify-between px-6 md:pl-8 border-b-2 border-[#84CC16] relative z-[50]">
       {/* Logo */}
-      <div className=" ">
-        <a href="/">
-          <Image src="/ArogayaCareLogo.svg" 
-          width={1000} height={1000} alt="Logo" className="w-auto h-10 object-cover" />
-        </a>
-      </div>
+      <div className="w-auto">
+  <a href="/">
+    <Image 
+      src="/ArogayaCareLogo.svg" 
+      width={1000} height={1000} 
+      alt="Logo" 
+      className="w-[200px] sm:w-[180px] md:w-[160px] lg:w-[140px] xl:w-[200px] h-auto object-cover"
+    /> 
+  </a>
+</div>
+
+
 
       {/* Navigation Links for Desktop */}
       <div className="hidden md:flex gap-[40px]">
