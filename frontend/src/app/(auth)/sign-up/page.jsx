@@ -55,7 +55,7 @@ const page = () => {
   };
 
   return (
-    <div className="flex h-screen max-h-screen bg-slate-200 font-title">
+    <div className="flex h-screen max-h-screen bg-slate-200 font-title overflow-hidden">
       <section className="remove-scrollbar container my-auto">
         <div className="sub-container max-w-[496px]">
           <Image

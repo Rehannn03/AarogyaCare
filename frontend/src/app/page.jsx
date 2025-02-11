@@ -9,8 +9,7 @@ import Head from "next/head"
 import { useState, useEffect, useRef, useCallback } from "react"
 import HeaderNav from "@/components/Hero2/Navbar"
 // ChatBot imports
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm"
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -20,93 +19,62 @@ import { X, MessageCircle, Send, Loader2, ArrowDownCircleIcon } from "lucide-rea
 
 import { motion, AnimatePresence } from "framer-motion"
 
-import { useChat as useVercelChat } from "ai/react"
+
 
 function useChat() {
-  const [streamingMessage, setStreamingMessage] = useState(null)
-  const {
-    messages: vercelMessages,
-    input,
-    handleInputChange,
-    isLoading,
-    error,
-    ...rest
-  } = useVercelChat({
-    api: "http://127.0.0.1:8000/query/",
-    onResponse: (response) => {
-      const reader = response.body?.getReader()
-      if (!reader) return
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-      const decoder = new TextDecoder()
-      let buffer = ""
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+  };
 
-      return new Promise((resolve, reject) => {
-        function push() {
-          reader
-            .read()
-            .then(({ done, value }) => {
-              if (done) {
-                if (buffer.length > 0) processChunk(buffer)
-                setStreamingMessage(null)
-                resolve()
-                return
-              }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
 
-              buffer += decoder.decode(value, { stream: true })
-              const lines = buffer.split("\n")
-              buffer = lines.pop() || ""
+    const newMessage = { id: Math.random().toString(36).slice(2), role: "user", content: input };
+    setMessages((prev) => [...prev, newMessage]);
+    setInput("");
+    setIsLoading(true);
+    setError(null);
 
-              lines.forEach(processChunk)
-
-              push()
-            })
-            .catch(reject)
-        }
-
-        push()
-      })
-    },
-  })
-
-  const processChunk = useCallback((chunk) => {
     try {
-      const parsed = JSON.parse(chunk)
-      setStreamingMessage((prev) => {
-        if (prev && prev.id === parsed.id) {
-          return { ...prev, content: parsed.content }
-        } else {
-          return parsed
-        }
-      })
-    } catch (e) {
-      console.error("Failed to parse chunk:", chunk)
+      const response = await fetch("http://127.0.0.1:8000/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: [...messages, newMessage] }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to get a response from the server: ${response.statusText}`);
+      }
+
+      const responseData = await response.json();
+
+      if (!responseData.fulfillmentText) {
+        throw new Error("Invalid response format from the server");
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        { id: Math.random().toString(36).slice(2), role: "assistant", content: responseData.fulfillmentText },
+      ]);
+    } catch (err) {
+      setError("Error connecting to the chatbot. Please try again.");
+      console.error("Chatbot Error:", err);
+    } finally {
+      setIsLoading(false);
     }
-  }, [])
+  };
 
-  const messages = [...vercelMessages]
-  if (streamingMessage && !messages.find((m) => m.id === streamingMessage.id)) {
-    messages.push(streamingMessage)
-  }
-
-  const handleSubmit = useCallback(
-    async (e) => {
-      e.preventDefault()
-      setStreamingMessage(null)
-      await rest.handleSubmit(e)
-    },
-    [rest.handleSubmit],
-  )
-
-  return {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    isLoading,
-    error,
-    ...rest,
-  }
+  return { messages, input, handleInputChange, handleSubmit, isLoading, error };
 }
+
+
+
 
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
@@ -192,7 +160,7 @@ export default function Home() {
           >
             <Card className="border-2">
               <CardHeader className="flex flex-row space-y-0 pb-3 items-center justify-between">
-                <CardTitle className="text-lg font-medium">Chat with MedTech Ai</CardTitle>
+                <CardTitle className="text-lg font-medium">Chat with ArogyaCare Ai</CardTitle>
                 <Button variant="ghost" size="icon" onClick={toggleChat} className="px-2 py-0">
                   <X className="size-4" />
                   <span className="sr-only">Close Chat</span>
@@ -211,7 +179,7 @@ export default function Home() {
                       <div
                         className={`inline-block rounded-lg p-4 ${message.role === "user" ? "bg-black text-white" : "bg-muted"}`}
                       >
-                        <ReactMarkdown children={message.content} remarkPlugins={[remarkGfm]} />
+                        {message.content}
                       </div>
                     </div>
                   ))}

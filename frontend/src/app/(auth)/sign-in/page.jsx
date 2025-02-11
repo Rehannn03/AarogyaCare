@@ -27,7 +27,7 @@ const SignInForm = () => {
   });
 
   const onSubmit = async (data) => {
-    console.log("Submitting Form...");  // Check if function is called
+    console.log("Submitting Form...");
     setIsSubmitting(true);
     try {
       console.log("Form Data:", data);
@@ -43,19 +43,20 @@ const SignInForm = () => {
     }
     setIsSubmitting(false);
   };
-  
-  
 
   return (
-    <div className="flex h-screen bg-slate-200 font-title">
-      <section className="container my-auto max-w-[496px]">
-        <Image src="/ArogayaCareLogo.svg" height={1000} width={1000} className="mb-12 h-10 w-fit" alt="Logo" priority />
-        <section className="mb-5 space-y-4">
-          <h1 className="text-[37px] font-bold md:text-[40px]">Welcome Back!</h1>
+    <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-slate-200 font-title justify-center">
+      {/* Left Section */}
+      <section className="w-full md:w-1/2 flex flex-col justify-center items-center px-6 md:px-12 overflow-hidden">
+        <Image src="/ArogayaCareLogo.svg" height={1000} width={1000} className="mb-6 h-10 w-auto" alt="Logo" priority />
+        
+        <div className="text-center md:text-left mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold">Welcome Back!</h1>
           <p className="text-dark-700">Sign in to continue.</p>
-        </section>
+        </div>
+
         <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="w-full max-w-sm space-y-6">
             <FormField control={form.control} name="email" render={({ field }) => (
               <FormItem>
                 <FormLabel>Email</FormLabel>
@@ -87,7 +88,16 @@ const SignInForm = () => {
         </div>
       </section>
 
-      <Image src="/sign-in.jpg" height={1000} width={1000} alt="Sign In Image" className="max-w-[50%]" />
+      {/* Right Section - Image */}
+      <section className="hidden md:block w-1/2">
+        <Image
+          src="/sign-in.jpg"
+          height={1000}
+          width={1000}
+          alt="Sign In Image"
+          className="h-full w-full object-cover"
+        />
+      </section>
     </div>
   );
 };
