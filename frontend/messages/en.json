@@ -25,5 +25,69 @@
         "profile": "Profile",
         "signOut": "Sign Out",
         "signUp": "Sign Up"
-    }
+    },
+    "Speciality":{
+        "findBySpeciality": "Find by Speciality",
+        "browseDoctors": "Simply browse through our extensive list of trusted doctors, schedule your appointment hassle-free.",
+        "generalPhysician": "General Physician",
+        "gynecologist": "Gynecologist",
+        "dermatologist": "Dermatologist",
+        "pediatricians": "Pediatricians",
+        "neurologist": "Neurologist",
+        "gastroenterologist": "Gastroenterologist"
+    },
+    "Statistics":{
+        "ourStatistics": "Our Statistics",
+        "diagnosisAccuracy": "Diagnosis Accuracy"
+      },
+      "Services":{
+        "our_services": "Our Services",
+        "description": "Explore the range of services we offer to enhance your healthcare experience.",
+        "intelligent_virtual_consultations": "Intelligent Virtual Consultations",
+        "intelligent_virtual_consultations_desc": "Our telehealth services provide convenient access to healthcare.",
+        "intuitive_appointment_booking": "Intuitive Appointment Booking",
+        "intuitive_appointment_booking_desc": "We make booking appointments hassle-free for doctors & patients.",
+        "patient_records_management": "Patient Records Management",
+        "patient_records_management_desc": "Our health records are securely stored and easily accessible.",
+        "ai_telehealth_chatbot": "AI Telehealth & Telemedicine Chatbot",
+        "ai_telehealth_chatbot_desc": "Experience the power of AI in healthcare with our ultimate chatbot.",
+        "remote_health_monitoring": "Remote Health Monitoring",
+        "remote_health_monitoring_desc": "Track your health metrics in real-time from the comfort of your home.",
+        "ai_powered_diagnosis_assistance": "AI-powered Diagnosis Assistance",
+        "ai_powered_diagnosis_assistance_desc": "Advanced AI algorithms to support accurate diagnosis.",
+        "see_all": "See All Services",
+        "show_less": "Show Less"
+      },
+      "Benefits":{
+            "benefitsSectionTitle": "Our Benefits",
+            "benefitsHeading": "Why Choose Medtech?",
+            "cuttingEdgeTitle": "Cutting-Edge AI Technology",
+            "cuttingEdgeDescription": "Osler harnesses the power of advanced artificial intelligence to revolutionize healthcare.",
+            "convenienceTitle": "Convenience & Accessible",
+            "convenienceDescription": "You can access medical consultations, health assessments at your fingertips.",
+            "personalizedTitle": "Personalized Healthcare",
+            "personalizedDescription": "Our AI algorithms analyze your health data to deliver tailored recommendations and insights.",
+            "efficientBookingTitle": "Efficient Booking",
+            "efficientBookingDescription": "Osler's platform allows you to book appointments with healthcare professionals.",
+            "secureTitle": "Secure and Confidential",
+            "secureDescription": "We prioritize your privacy and security. Your health data is stored and transmitted securely.",
+            "healthcareEcosystemTitle": "Healthcare Ecosystem",
+            "healthcareEcosystemDescription": "Osler offers a holistic healthcare experience. From consultations with medical experts.",
+            "seeAllBenefits": "See All Benefits",
+            "showLessBenefits": "Show Less Benefits"
+      },
+      "Corefeature":{
+            "coreFeaturesSectionTitle": "Our Core Features",
+            "feature1Title": "Intelligent Health Metrics For All",
+            "feature1Description": "Our platform employs state-of-the-art algorithms and machine learning to assist healthcare professionals in accurate diagnosis and treatment planning.",
+            "feature1MoreEfficient": "More Efficient",
+            "feature1PatientsSaved": "Patients Saved",
+            "feature2Title": "Telehealth AI Chatbot",
+            "feature2Description": "With MedTech, patients can schedule telehealth consultations with qualified healthcare providers. Whether you're seeking routine check-ups, specialist opinions, or mental health support.",
+            "feature2MoreEfficient": "More Efficient",
+            "feature2PatientsSaved": "Patients Saved",
+            "downloadAppButton": "Download The App",
+            "feature1Button": "Feature #1",
+            "feature2Button": "Feature #2"  
+      }
 }

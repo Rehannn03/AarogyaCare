@@ -32,7 +32,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "src/app/(root)/pricing/page.jsx", "src/components/Analytics/LineChartUI.jsx", "src/app/layout.js", "src/app/dashboard/layout.jsx", "src/components/Analytics/WeekChartUI.jsx", "src/components/Analytics/BarChartUI.jsx", "src/components/Analytics/PieChartUI.jsx"  ],
+, "src/app/(root)/pricing/page.jsx", "src/components/Analytics/LineChartUI.jsx", "src/app/layout.js", "src/app/dashboard/layout.jsx", "src/components/Analytics/WeekChartUI.jsx", "src/components/Analytics/BarChartUI.jsx", "src/components/Analytics/PieChartUI.jsx", "src/components/form/PatientForm.tsx"  ],
   "exclude": [
     "node_modules"
   ]

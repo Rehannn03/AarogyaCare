@@ -5,18 +5,19 @@ import { CiCalendarDate } from "react-icons/ci";
 import { FaBarsProgress, FaUserDoctor } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa";
 import { useUserStore } from "@/stores/store";
+import Image from "next/image";
 
 function Sidebar() {
   const [stateContext, setStateContext] = React.useState(0);
   const { user } = useUserStore();
   const [isAdmin, setisAdmin] = React.useState(false);
-    
+
   React.useEffect(() => {
     if (!user) return;
     if (user.role === "admin") {
       setisAdmin(true);
-    } 
-    }, [user]);
+    }
+  }, [user]);
   const active = "bg-white/30";
   const menuItems = [
     {
@@ -82,13 +83,31 @@ function Sidebar() {
       link: "/dashboard/all-appointments",
       allowed: ["admin"],
     },
+    // Sign out Item
+    {
+      name: "Sign Out",
+      icon: <FaUser className="w-5 h-5" />,
+      link: "/",
+      allowed: ["admin", "doctor", "patient"],
+    },
   ];
   return (
     <ul className="mb-4 flex flex-col gap-2 overflow-auto pb-6">
+      <div className="flex justify-center">
+        <Link href="/">
+          <Image
+            src="/ArogayaCareLogo.svg"
+            height={1000}
+            width={1000}
+            className="mb-12 h-10 w-fit"
+            priority
+          />
+        </Link>
+      </div>
       {menuItems.map((item, index) => (
         <li
           key={index}
-          className={item.allowed.includes(user?.role) ? "block" : "hidden"} 
+          className={item.allowed.includes(user?.role) ? "block" : "hidden"}
         >
           <Link href={item.link}>
             <button

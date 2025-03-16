@@ -3,48 +3,45 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaArrowRight } from "react-icons/fa";
 import { Button } from "../ui/button";
+import { useTranslations } from 'next-intl';  // Import useTranslations from next-intl
 
 const Benefits = () => {
+  const t = useTranslations("Benefits");  // Hook to access the translations
+
   const benefits = [
     {
-      title: "Cutting-Edge AI Technology",
-      description:
-        "Osler harnesses the power of advanced artificial intelligence to revolutionize healthcare.",
+      title: t('cuttingEdgeTitle'),
+      description: t('cuttingEdgeDescription'),
       icon: "💡",
     },
     {
-      title: "Convenience & Accessible",
-      description:
-        "You can access medical consultations, health assessments at your fingertips.",
+      title: t('convenienceTitle'),
+      description: t('convenienceDescription'),
       icon: "📱",
     },
     {
-      title: "Personalized Healthcare",
-      description:
-        "Our AI algorithms analyze your health data to deliver tailored recommendations and insights.",
+      title: t('personalizedTitle'),
+      description: t('personalizedDescription'),
       icon: "➕",
     },
     {
-      title: "Efficient Booking",
-      description:
-        "Osler's platform allows you to book appointments with healthcare professionals.",
+      title: t('efficientBookingTitle'),
+      description: t('efficientBookingDescription'),
       icon: "📅",
     },
     {
-      title: "Secure and Confidential",
-      description:
-        "We prioritize your privacy and security. Your health data is stored and transmitted securely.",
+      title: t('secureTitle'),
+      description: t('secureDescription'),
       icon: "🔒",
     },
     {
-      title: "Healthcare Ecosystem",
-      description:
-        "Osler offers a holistic healthcare experience. From consultations with medical experts.",
+      title: t('healthcareEcosystemTitle'),
+      description: t('healthcareEcosystemDescription'),
       icon: "🌐",
     },
   ];
 
-  const [visibleBenefits, setVisibleBenefits] = useState(3); 
+  const [visibleBenefits, setVisibleBenefits] = useState(3);
   const [showAll, setShowAll] = useState(false);
 
   const handleToggle = () => {
@@ -53,7 +50,7 @@ const Benefits = () => {
   };
 
   return (
-    <section className=" px-4 sm:px-8 lg:px-16 font-title bg-white">
+    <section className="px-4 sm:px-8 lg:px-16 font-title bg-white">
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -67,8 +64,7 @@ const Benefits = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-sm font-semibold text-white uppercase tracking-wider"
           >
-             <Button className=" outline hover:bg-[#7882D4] hover:text-white mb-4" variant="ghost">Our Benefits</Button>
-            
+            <Button className="outline hover:bg-[#7882D4] hover:text-white mb-4" variant="ghost">{t('benefitsSectionTitle')}</Button>
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: -20 }}
@@ -76,7 +72,7 @@ const Benefits = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-4xl font-bold text-white"
           >
-            Why Choose Medtech?
+            {t('benefitsHeading')}
           </motion.h2>
         </div>
 
@@ -108,10 +104,10 @@ const Benefits = () => {
                 </motion.div>
               </div>
               <div className="p-8 pt-5">
-              <h3 className="text-2xl font-extrabold text-slate-800 mb-2">
-                {benefit.title}
-              </h3>
-              <p className="text-gray-600 text-xl">{benefit.description}</p>
+                <h3 className="text-2xl font-extrabold text-slate-800 mb-2">
+                  {benefit.title}
+                </h3>
+                <p className="text-gray-600 text-xl">{benefit.description}</p>
               </div>
             </motion.div>
           ))}
@@ -124,7 +120,7 @@ const Benefits = () => {
             onClick={handleToggle}
             className="flex items-center justify-center font-bold text-lg px-6 py-3 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors mb-8 "
           >
-            {showAll ? "Show Less Benefits" : "See All Benefits"}
+            {showAll ? t('showLessBenefits') : t('seeAllBenefits')}
             <FaArrowRight className="ml-2" />
           </motion.button>
         </div>

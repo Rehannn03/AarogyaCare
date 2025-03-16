@@ -11,9 +11,13 @@ import { LayoutDashboard, User, LogOut } from "lucide-react"
 import { ChevronDown } from "lucide-react"
 import setLanguageValue from "../../../action/set-language-action";
 import { useTranslations } from "next-intl";
+import apiClient from '@/api-client/apiClient';
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import Image from "next/image"
 
 const Navbar = () => {
-  const { user, signOut } = useUserStore()
+  const { user,update} = useUserStore()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [userImg, setUserImg] = useState(user?.avatar || "/default-avatar.png")
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -23,14 +27,50 @@ const Navbar = () => {
   const languageDropdownRef = useRef(null)
   const [currentLanguage, setCurrentLanguage] = useState("English")
   const t= useTranslations("NavBar")
+  const { toast } = useToast();
+  const router = useRouter();
+  const [isLogOut,setIsLogOut]=useState(false)
 
+  const logOut = async () => {
+    try {
+      console.log("Logging out");
+  
+      const response = await apiClient.post("/users/logout");
+      console.log("Logout Response:", response); // Log the full response here
+  
+      toast({
+        title: "Success",
+        description: response.data.message,
+      });
+     
+      update({ user: null });
+      setIsLogOut(true);
+      router.push("/")   
+      window.location.reload();
+    } catch (error) {
+      console.error("Error during logout:", error); // Log the error for further inspection
+      const axiosError = error;
+      let errorMessage = axiosError.response?.data.message || "Something went wrong!";
+      toast({
+        title: "Sign Out Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    }
+  };
+  
+  
   const handleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
-
   useEffect(() => {
-    setUserImg(user?.avatar || "/default-avatar.png")
-  }, [user])
+    if (!user) {
+      setUserImg("/default-avatar.png"); 
+    } else {
+      setUserImg(user?.avatar || "/default-avatar.png"); 
+    }
+  }, [user]);  
+  
 
   const closeMenu = () => {
     setIsMenuOpen(false)
@@ -53,7 +93,7 @@ const Navbar = () => {
   const handleDropdownClose = () => {
     timeoutRef.current = setTimeout(() => {
       setIsDropdownOpen(false)
-    }, 800) // 300ms delay before closing
+    }, 2500) // 300ms delay before closing
   }
 
   const handleLanguageDropdownOpen = () => {
@@ -68,11 +108,10 @@ const Navbar = () => {
   }
 
   const changeLanguage = (language) => {
-    setCurrentLanguage(language)
-    setLanguageValue(language)
-    console.log(currentLanguage);
-    
-  }
+    setCurrentLanguage(language);  // Update the language
+    setLanguageValue(language);    // Make sure to set the language value for your app
+    console.log("Language changed to:", language);  // Log the language being selected
+};
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -93,11 +132,18 @@ const Navbar = () => {
   return (
     <nav className="h-[72px] bg-[white] flex items-center justify-between px-6 md:pl-8 border-b-2 border-[#84CC16] relative z-[50]">
       {/* Logo */}
-      <div>
-        <a href="/">
-          <img src="/Hero/Logo.png" alt="Logo" className="w-[10em] object-cover" />
-        </a>
-      </div>
+      <div className="w-auto">
+  <a href="/">
+    <Image 
+      src="/ArogayaCareLogo.svg" 
+      width={1000} height={1000} 
+      alt="Logo" 
+      className="w-[200px] sm:w-[180px] md:w-[160px] lg:w-[140px] xl:w-[200px] h-auto object-cover"
+    /> 
+  </a>
+</div>
+
+
 
       {/* Navigation Links for Desktop */}
       <div className="hidden md:flex gap-[40px]">
@@ -113,6 +159,10 @@ const Navbar = () => {
       </div>
 
       {/* Language Dropdown for Desktop */}
+      
+
+      {/* Avatar or SignUp Button for Desktop */}
+      <div className="hidden md:flex items-center gap-4">
       <div className="hidden md:flex items-center mr-4">
         <div
           className="relative"
@@ -124,7 +174,7 @@ const Navbar = () => {
             className="flex items-center gap-2 text-[#84CC16] hover:text-blue-600 transition-colors duration-200"
             onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
           >
-            {currentLanguage}
+            {currentLanguage=== "en" ? "English" : currentLanguage === "mr" ? "मराठी" : "தமிழ்"}
             <ChevronDown className="w-4 h-4" />
           </button>
           {isLanguageDropdownOpen && (
@@ -142,9 +192,6 @@ const Navbar = () => {
           )}
         </div>
       </div>
-
-      {/* Avatar or SignUp Button for Desktop */}
-      <div className="hidden md:flex items-center gap-4">
         {user ? (
           <div
             className="flex items-center gap-6 relative"
@@ -154,7 +201,9 @@ const Navbar = () => {
           >
             <div className="h-[50px] w-[50px] rounded-full overflow-hidden bg-white p-1 cursor-pointer">
               {userImg ? (
-                <img
+                <Image
+                width={28}
+                height={28}
                   src={userImg || "/placeholder.svg"}
                   alt="Profile"
                   className="h-full w-full object-cover rounded-full"
@@ -178,7 +227,7 @@ const Navbar = () => {
                   {t("profile")}
                 </Link>
                 <button
-                  onClick={signOut}
+                  onClick={logOut}
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   <LogOut className="inline-block w-4 h-4 mr-2" />
@@ -205,46 +254,47 @@ const Navbar = () => {
 
       {/* Collapsible Mobile Menu */}
       {isMenuOpen && (
-        <div className="fixed top-0 left-0 w-full h-screen bg-white z-[100]" onClick={closeMenu}>
+        <div className="fixed top-0 left-0 w-full h-screen bg-white z-[100]" >
           <div className="absolute top-0 right-0 m-4 cursor-pointer" onClick={handleMenu}>
             <AiOutlineClose className="text-2xl text-gray-800" />
           </div>
           <div className="flex flex-col items-center mt-12">
-            {navLinks.map((link, index) => (
-              <Link
-                key={index}
-                href={`/${link.toLowerCase()}`}
+          {navLinks.map(({ key, path }) => (
+          <a
+            key={key}
+            href={path}
                 className="font-medium text-[#84CC16] text-xl py-3 hover:text-blue-600 hover:scale-105 transition-all duration-300 ease-in-out transform"
-                onClick={closeMenu}
               >
-                {link}
-              </Link>
+                 {t(`${key}`)}
+              </a>
             ))}
-            <div className="flex flex-col items-center mt-4">
-              <button
-                className="flex items-center gap-2 text-[#84CC16] hover:text-blue-600 transition-colors duration-200 mb-4"
-                onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
-              >
-                {currentLanguage}
-                <ChevronDown className="w-4 h-4" />
-              </button>
-              {isLanguageDropdownOpen && (
-                <div className="w-full max-w-xs bg-white rounded-md shadow-lg py-1 mb-4">
-                  {["English", "मराठी", "தமிழ்"].map((language) => (
-                    <button
-                      key={language}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => {
-                        changeLanguage(language)
-                        closeMenu()
-                      }}
-                    >
-                      {language}
-                    </button>
-                  ))}
-                </div>
-              )}
+            <div
+          className="relative"
+          ref={languageDropdownRef}
+          onMouseEnter={handleLanguageDropdownOpen}
+          onMouseLeave={handleLanguageDropdownClose}
+        >
+          <button
+            className="font-medium flex text-[#84CC16] text-xl py-3 items-center hover:text-blue-600 hover:scale-105 transition-all duration-300 ease-in-out transform"
+            onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
+          >
+             {currentLanguage=== "en" ? "English" : currentLanguage === "mr" ? "मराठी" : "தமிழ்"}
+            <ChevronDown className="w-4 h-4" />
+          </button>
+          {isLanguageDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1 z-10">
+              {["en", "mr", "tm"].map((language) => (
+                <button
+                  key={language}
+                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={() => changeLanguage(language)}
+                >
+                   {language === "en" ? "English" : language === "mr" ? "मराठी" : "தமிழ்"}
+                </button>
+              ))}
             </div>
+          )}
+        </div>
             <div className="flex flex-col items-center mt-4">
               {user ? (
                 <>
@@ -268,7 +318,7 @@ const Navbar = () => {
                     <User className="inline-block w-4 h-4 mr-2" />
                     Profile
                   </Link>
-                  <button onClick={signOut} className="py-2 text-gray-700 hover:text-blue-600">
+                  <button onClick={logOut} className="py-2 text-gray-700 hover:text-blue-600">
                     <LogOut className="inline-block w-4 h-4 mr-2" />
                     Sign Out
                   </button>

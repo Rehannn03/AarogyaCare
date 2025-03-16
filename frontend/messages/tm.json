@@ -1,7 +1,92 @@
 {
-    "HomePage":{
-        "title1":"Marathi1",
-         "title2":"Marathi2",
-          "title3":"Marathi3"
+    "HomePage": {
+        "Title": {
+            "title1": "எங்கு AI சந்திக்கிறது",
+            "title2": "தொலை மருத்துவம் &",
+            "title3": "டெலிமெடிசின்"
+        },
+        "SubTitle": {
+            "sub1": "நாங்கள் முன்னணி தொலை மருத்துவ மற்றும் டெலிமெடிசின் தீர்வுகளுடன் சுகாதாரத்தின் எதிர்காலத்தை முன்னேற்றுகிறோம்.",
+            "sub2": "2.5M+ நம்பிக்கையுடன்",
+            "sub3": "AI/ML தொழில்நுட்பம்"
+        },
+        "Button": {
+            "button1": "தொடங்குங்கள்"
+        }
+    },
+    "NavBar": {
+        "pricing": "விலை",
+        "features": "அம்சங்கள்",
+        "about": "எங்களைப் பற்றி",
+        "contact": "தொடர்பு கொள்ள",
+        "blog": "வலைப்பதிவு",
+        "dashboard": "டாஷ்போர்டு",
+        "profile": "சுயவிவரம்",
+        "signOut": "வெளியேறு",
+        "signUp": "பதிவு செய்யவும்"
+    },
+    "Speciality": {
+        "findBySpeciality": "சிறப்பு பிரிவின்படி தேடுங்கள்",
+        "browseDoctors": "நம்பகமான மருத்தவர்களின் விரிவான பட்டியலை எளிதாக உலாவுங்கள், சிரமமின்றி உங்கள் நேரத்தை முன்பதிவு செய்யுங்கள்.",
+        "generalPhysician": "பொது மருத்துவர்",
+        "gynecologist": "மகப்பேறு மருத்துவர்",
+        "dermatologist": "தோல் மருத்துவர்",
+        "pediatricians": "குழந்தைகள் மருத்துவர்",
+        "neurologist": "நரம்பியல் மருத்துவர்",
+        "gastroenterologist": "வயிற்று மற்றும் குடல் மருத்துவர்"
+    },
+    "Statistics": {
+        "ourStatistics": "எங்கள் புள்ளிவிவரங்கள்",
+        "diagnosisAccuracy": "நோயறிதல் துல்லியம்"
+    },
+    "Services": {
+        "our_services": "எங்கள் சேவைகள்",
+        "description": "உங்கள் சுகாதார அனுபவத்தை மேம்படுத்த எங்கள் பல்வேறு சேவைகளை கண்டறியுங்கள்.",
+        "intelligent_virtual_consultations": "புத்திசாலி மெய்நிகர் ஆலோசனைகள்",
+        "intelligent_virtual_consultations_desc": "எங்கள் தொலை மருத்துவ சேவைகள் சுகாதார அணுகலை வசதியாக வழங்குகிறது.",
+        "intuitive_appointment_booking": "உணர்வுபூர்வமான நேரம் முன்பதிவு",
+        "intuitive_appointment_booking_desc": "மருத்துவர்களுக்கும் நோயாளிகளுக்கும் எளிதாக நேரம் முன்பதிவு செய்ய உதவுகிறது.",
+        "patient_records_management": "நோயாளி பதிவுகள் மேலாண்மை",
+        "patient_records_management_desc": "நோயாளி மருத்துவ பதிவுகள் பாதுகாப்பாக சேமிக்கப்படும் மற்றும் எளிதாக அணுகலாம்.",
+        "ai_telehealth_chatbot": "AI தொலை மருத்துவ & டெலிமெடிசின் சாட்பாட்",
+        "ai_telehealth_chatbot_desc": "எங்கள் அதிநவீன AI சாட்பாட் மூலம் சுகாதார உதவியை அனுபவிக்குங்கள்.",
+        "remote_health_monitoring": "தொலை சுகாதார கண்காணிப்பு",
+        "remote_health_monitoring_desc": "உங்கள் உடல்நிலை தரவுகளை நேரடியாக கண்காணியுங்கள்.",
+        "ai_powered_diagnosis_assistance": "AI இயக்கப்பட்ட நோயறிதல் உதவி",
+        "ai_powered_diagnosis_assistance_desc": "துல்லியமான நோயறிதலுக்கு மேம்பட்ட AI வழிகாட்டுதல்.",
+        "see_all": "அனைத்தையும் பார்க்க",
+        "show_less": "குறைவாக காட்ட"
+    },
+    "Benefits": {
+        "benefitsSectionTitle": "எங்கள் நன்மைகள்",
+        "benefitsHeading": "ஏன் Medtech?",
+        "cuttingEdgeTitle": "உயர்தர AI தொழில்நுட்பம்",
+        "cuttingEdgeDescription": "Osler மிக முன்னேற்றமான செயற்கை நுண்ணறிவைப் பயன்படுத்தி சுகாதாரத்தைக் கட்டவிழ்க்கிறது.",
+        "convenienceTitle": "வசதியும் அணுகலுமாக",
+        "convenienceDescription": "மருத்துவ ஆலோசனைகள், உடல்நிலை மதிப்பீடுகள் உங்கள் விரல்முனையில் கிடைக்கும்.",
+        "personalizedTitle": "தனிப்பயனாக்கப்பட்ட சுகாதாரம்",
+        "personalizedDescription": "எங்கள் AI உங்கள் உடல்நிலை தரவுகளை பகுப்பாய்வு செய்து தனிப்பட்ட பரிந்துரைகளை வழங்குகிறது.",
+        "efficientBookingTitle": "விரைவான முன்பதிவு",
+        "efficientBookingDescription": "Osler உங்கள் நேரத்தை எளிதாக முன்பதிவு செய்ய உதவுகிறது.",
+        "secureTitle": "பாதுகாப்பான மற்றும் ரகசியமான",
+        "secureDescription": "உங்கள் தனியுரிமை மற்றும் பாதுகாப்பை முக்கியமாகக் கருதுகிறோம். உங்கள் மருத்துவ பதிவுகள் பாதுகாப்பாக சேமிக்கப்படும்.",
+        "healthcareEcosystemTitle": "முழுமையான சுகாதார சூழல்",
+        "healthcareEcosystemDescription": "Osler ஒரு முழுமையான சுகாதார அனுபவத்தை வழங்குகிறது.",
+        "seeAllBenefits": "அனைத்து நன்மைகளையும் காண்க",
+        "showLessBenefits": "குறைவாக காண்பிக்கவும்"
+    },
+    "Corefeature": {
+        "coreFeaturesSectionTitle": "எங்கள் முக்கிய அம்சங்கள்",
+        "feature1Title": "அனைவருக்கும் புத்திசாலி உடல்நிலை அளவீடுகள்",
+        "feature1Description": "நோயறிதல் மற்றும் சிகிச்சை திட்டமிடுவதில் உதவ, எங்கள் மேம்பட்ட அல்கோரிதங்கள் மற்றும் இயந்திரக் கற்றல் முறைமையைப் பயன்படுத்துகிறோம்.",
+        "feature1MoreEfficient": "மிகவும் செயல்திறன் கொண்டது",
+        "feature1PatientsSaved": "காப்பாற்றப்பட்ட நோயாளிகள்",
+        "feature2Title": "தொலை மருத்துவ AI சாட்பாட்",
+        "feature2Description": "MedTech மூலம், நோயாளிகள் தகுதியான மருத்தவர்களுடன் தொலை மருத்துவ ஆலோசனைகளைப் பெறலாம். சாதாரண பரிசோதனைகள், நிபுணர் ஆலோசனைகள் அல்லது மனநல ஆதரவை தேடினாலும், எளிதாக அணுகலாம்.",
+        "feature2MoreEfficient": "மிகவும் செயல்திறன் கொண்டது",
+        "feature2PatientsSaved": "காப்பாற்றப்பட்ட நோயாளிகள்",
+        "downloadAppButton": "பயன்பாட்டை பதிவிறக்குக",
+        "feature1Button": "அம்சம் #1",
+        "feature2Button": "அம்சம் #2"
     }
 }

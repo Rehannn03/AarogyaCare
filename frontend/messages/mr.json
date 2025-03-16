@@ -24,5 +24,73 @@
         "profile": "प्रोफाइल",
         "signOut": "साइन आउट",
         "signUp": "साइन अप"
-    }
+    },
+    "Speciality":{
+        "findBySpeciality": "विशेषताद्वारे शोधा",
+        "browseDoctors": "आमच्या विश्वासार्ह डॉक्टरांच्या विस्तृत यादीतून सहज ब्राउझ करा आणि आपली अपॉइंटमेंट सहज बुक करा.",
+        "generalPhysician": "सामान्य चिकित्सक",
+        "gynecologist": "स्त्रीरोगतज्ज्ञ",
+        "dermatologist": "त्वचारोगतज्ज्ञ",
+        "pediatricians": "बालरोगतज्ज्ञ",
+        "neurologist": "मस्तिष्क व मज्जातंतू रोगतज्ज्ञ",
+        "gastroenterologist": "पचनसंस्थेचे तज्ज्ञ"
+    },
+    "Statistics":{
+        "ourStatistics": "आमची आकडेवारी",
+        "diagnosisAccuracy": "निदान अचूकता"
+      },
+      "Services":{
+        "our_services": "आमच्या सेवा",
+    "description": "तुमच्या आरोग्यसेवा अनुभवाला वाढवण्यासाठी आम्ही प्रदान करत असलेल्या सेवांची माहिती घ्या.",
+    "intelligent_virtual_consultations": "स्मार्ट आभासी सल्लामसलत",
+    "intelligent_virtual_consultations_desc": "आमच्या टेलीहेल्थ सेवांमुळे आरोग्यसेवा सहज उपलब्ध होते.",
+    "intuitive_appointment_booking": "सुलभ अपॉइंटमेंट बुकिंग",
+    "intuitive_appointment_booking_desc": "डॉक्टर आणि रुग्णांसाठी अपॉइंटमेंट बुकिंगला सोपे आणि सोयीस्कर बनवतो.",
+    "patient_records_management": "रुग्ण नोंदी व्यवस्थापन",
+    "patient_records_management_desc": "आमच्या आरोग्य नोंदी सुरक्षितपणे संग्रहित आणि सहज प्रवेशयोग्य आहेत.",
+    "ai_telehealth_chatbot": "एआय टेलीहेल्थ आणि टेलीमेडिसिन चॅटबॉट",
+    "ai_telehealth_chatbot_desc": "आमच्या अत्याधुनिक चॅटबॉटद्वारे आरोग्यसेवेत एआयचे सामर्थ्य अनुभवा.",
+    "remote_health_monitoring": "दूरस्थ आरोग्य निरीक्षण",
+    "remote_health_monitoring_desc": "तुमच्या घराच्या आरामात तुमच्या आरोग्य मेट्रिक्सचा थेट मागोवा घ्या.",
+    "ai_powered_diagnosis_assistance": "एआय-आधारित निदान सहाय्य",
+    "ai_powered_diagnosis_assistance_desc": "अचूक निदानासाठी प्रगत एआय अल्गोरिदम.",
+    "see_all": "सर्व सेवा पहा",
+    "show_less": "कमी दाखवा"
+      },
+      "Benefits":{
+        
+            "benefitsSectionTitle": "आमचे फायदे",
+            "benefitsHeading": "मेडटेक का निवडावा?",
+            "cuttingEdgeTitle": "कटिंग-एज एआय तंत्रज्ञान",
+            "cuttingEdgeDescription": "ऑस्लर आरोग्यसेवा क्रांती करण्यासाठी प्रगत कृत्रिम बुद्धिमत्तेची शक्ती वापरतो.",
+            "convenienceTitle": "सुलभता आणि प्रवेशयोग्यता",
+            "convenienceDescription": "तुम्ही वैद्यकीय सल्ले, आरोग्य मूल्यांकन आपल्या अंगठ्यांच्या टोकावर मिळवू शकता.",
+            "personalizedTitle": "वैयक्तिकृत आरोग्य सेवा",
+            "personalizedDescription": "आमचे एआय अल्गोरिदम तुमचे आरोग्य डेटा विश्लेषण करून वैयक्तिकृत शिफारसी आणि माहिती देतात.",
+            "efficientBookingTitle": "कार्यक्षम बुकिंग",
+            "efficientBookingDescription": "ऑस्लरचा प्लॅटफॉर्म तुम्हाला आरोग्य व्यावसायिकांसोबत भेटी बुक करण्याची सुविधा देतो.",
+            "secureTitle": "सुरक्षित आणि गुप्त",
+            "secureDescription": "आम्ही तुमची गोपनीयता आणि सुरक्षिततेला प्राधान्य देतो. तुमचा आरोग्य डेटा सुरक्षितपणे संग्रहित आणि प्रसारित केला जातो.",
+            "healthcareEcosystemTitle": "आरोग्य सेवा पारिस्थितिकी तंत्र",
+            "healthcareEcosystemDescription": "ऑस्लर एक संपूर्ण आरोग्य सेवा अनुभव प्रदान करतो. वैद्यकीय तज्ञांसोबत सल्लामसलत करण्यापासून ते आरोग्य मूल्यांकन.",
+            "seeAllBenefits": "सर्व फायदे पाहा",
+            "showLessBenefits": "कमी फायदे पहा"
+          
+      }
+      ,
+      "Corefeature":{
+        "coreFeaturesSectionTitle": "आमची मुख्य वैशिष्ट्ये",
+        "feature1Title": "सर्वांसाठी बुद्धिमान आरोग्य मेट्रिक्स",
+        "feature1Description": "आमच्या प्लॅटफॉर्ममध्ये आरोग्यतज्ञांना अचूक निदान आणि उपचार नियोजनात मदत करण्यासाठी अत्याधुनिक अल्गोरिदम आणि मशीन लर्निंग वापरले जातात.",
+        "feature1MoreEfficient": "जास्त कार्यक्षम",
+        "feature1PatientsSaved": "रुग्ण वाचवले",
+        "feature2Title": "टेलीहेल्थ AI चॅटबॉट",
+        "feature2Description": "MedTech सह, रुग्ण प्रमाणित आरोग्य सेवा प्रदात्यांसोबत टेलीहेल्थ सल्लामसलत शेड्यूल करू शकतात. तुम्ही रूटीन चेक-अप, विशेषज्ञांचे मत किंवा मानसिक आरोग्य समर्थन घेत असाल तरी.",
+        "feature2MoreEfficient": "जास्त कार्यक्षम",
+        "feature2PatientsSaved": "रुग्ण वाचवले",
+        "downloadAppButton": "ऍप डाउनलोड करा",
+        "feature1Button": "वैशिष्ट्य #1",
+        "feature2Button": "वैशिष्ट्य #2"
+      }
+      
 }

@@ -5,84 +5,116 @@ import Statistics from "@/components/Hero2/Statistics"
 import OurService from "@/components/Hero2/OurService"
 import Benefits from "@/components/Hero2/Benefits"
 import CoreFeatures from "@/components/Hero2/CoreFeatures"
-import Head from "next/head";
-import { useState,useEffect,useRef } from "react"
-import HeaderNav from "@/components/Hero2/Navbar";
+import Head from "next/head"
+import { useState, useEffect, useRef, useCallback } from "react"
+import HeaderNav from "@/components/Hero2/Navbar"
 // ChatBot imports
-import ReactMarkdown from "react-markdown"
-import remarkGfm from "remark-gfm";
+
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scrollarea"
 
-import { X,
-  MessageCircle,
-  Send,
-  Loader2,
-  ArrowDownCircleIcon
- } from "lucide-react";
+import { X, MessageCircle, Send, Loader2, ArrowDownCircleIcon } from "lucide-react"
 
- import { motion,AnimatePresence } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 
- import { useChat } from 'ai/react'
+
+
+function useChat() {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    const newMessage = { id: Math.random().toString(36).slice(2), role: "user", content: input };
+    setMessages((prev) => [...prev, newMessage]);
+    setInput("");
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch("http://127.0.0.1:8000/query", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: [...messages, newMessage] }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to get a response from the server: ${response.statusText}`);
+      }
+
+      const responseData = await response.json();
+
+      if (!responseData.fulfillmentText) {
+        throw new Error("Invalid response format from the server");
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        { id: Math.random().toString(36).slice(2), role: "assistant", content: responseData.fulfillmentText },
+      ]);
+    } catch (err) {
+      setError("Error connecting to the chatbot. Please try again.");
+      console.error("Chatbot Error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { messages, input, handleInputChange, handleSubmit, isLoading, error };
+}
+
+
 
 
 export default function Home() {
-  const [isChatOpen,setIsChatOpen]=useState(false);
-  const [showChatIcon,setShowChatIcon]= useState(false);
-  const chatIconRef=useRef(null);
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [showChatIcon, setShowChatIcon] = useState(false)
+  const chatIconRef = useRef(null)
 
-  const {
-    messages,
-    input,
-    handleInputChange,handleSubmit,
-    isLoading,
-    stop,
-    reload,
-    error} =useChat({api:"/api/gemini"});
-    const scrollRef=useRef(null)
+  const { messages, input, handleInputChange, handleSubmit, isLoading, stop, reload, error } = useChat()
+  const scrollRef = useRef(null)
 
-    useEffect(()=>{
-      if(scrollRef.current){
-        scrollRef.current.scrollIntoView({behavior:"smooth"});
-      }
-    },[messages]);
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [scrollRef]) //Corrected dependency
 
-  useEffect(()=>{
-
-    const handleScroll=()=>{
-      if(window.scrollY>200){
-        setShowChatIcon(true);
-      }
-      else{
-        setShowChatIcon(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 200) {
+        setShowChatIcon(true)
+      } else {
+        setShowChatIcon(false)
         setIsChatOpen(false)
       }
-    };
-
-    handleScroll();
-
-    window.addEventListener("scroll",handleScroll);
-
-    return ()=>{
-      window.removeEventListener("scroll",handleScroll);
     }
-  },[]);
 
-  const toggleChat=()=>{
+    handleScroll()
+
+    window.addEventListener("scroll", handleScroll)
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll)
+    }
+  }, [])
+
+  const toggleChat = () => {
     setIsChatOpen(!isChatOpen)
   }
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    window.scrollTo(0, 0)
+  }, [])
   return (
     <>
       <Head>
@@ -90,54 +122,46 @@ export default function Home() {
         <meta name="description" content="Generated by create next app" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <HeaderNav/> 
-      <Hero/>
-      <Speciality/>
-      <Statistics/>
-      <OurService/>
-      <Benefits/>
-      <CoreFeatures/>
+      <HeaderNav />
+      <Hero />
+      <Speciality />
+      <Statistics />
+      <OurService />
+      <Benefits />
+      <CoreFeatures />
       <AnimatePresence>
         {showChatIcon && (
-          <motion.div 
-          initial={{opacity:0,y:100}}
-          animate={{opacity:1,y:0}}
-          exit={{opacity:0,y:100}}
-          transition={{duration:0.2}}
-          className="fixed bottom-4 right-4 z-50"
+          <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-4 right-4 z-50"
           >
-            <Button ref={chatIconRef} onClick={toggleChat} size="icon" className="rounded-full size-16 p-2 bg-[#84CC16] shadow-lg hover:bg-green-500">
-              {!isChatOpen ?(
-                <MessageCircle className="size-6"/>
-              ):(
-                <ArrowDownCircleIcon/>
-              )}
+            <Button
+              ref={chatIconRef}
+              onClick={toggleChat}
+              size="icon"
+              className="rounded-full size-16 p-2 bg-[#84CC16] shadow-lg hover:bg-green-500"
+            >
+              {!isChatOpen ? <MessageCircle className="size-6" /> : <ArrowDownCircleIcon />}
             </Button>
-
-
           </motion.div>
         )}
       </AnimatePresence>
       <AnimatePresence>
         {isChatOpen && (
           <motion.div
-          initial={{opacity:0, scale:0.8}}
-          animate={{opacity:1,scale:1}}
-          exit={{opacity:0, scale:0.8}}
-          transition={{duration:0.2}}
-          className="fixed bottom-20 right-4 z-50 w-[95%] md:w-[500px]"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.2 }}
+            className="fixed bottom-20 right-4 z-50 w-[95%] md:w-[500px]"
           >
             <Card className="border-2">
               <CardHeader className="flex flex-row space-y-0 pb-3 items-center justify-between">
-                <CardTitle className="text-lg font-medium">
-                  Chat with MedTech Ai
-                </CardTitle>
-                <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={toggleChat}
-                className="px-2 py-0"
-                >
+                <CardTitle className="text-lg font-medium">Chat with ArogyaCare Ai</CardTitle>
+                <Button variant="ghost" size="icon" onClick={toggleChat} className="px-2 py-0">
                   <X className="size-4" />
                   <span className="sr-only">Close Chat</span>
                 </Button>
@@ -145,70 +169,62 @@ export default function Home() {
               <CardContent>
                 <ScrollArea className="h-[300px] pr-4">
                   {messages?.length === 0 && (
-                     <div className="w-full mt-32 text-gray-500 items-center justify-center flex gap-3">
-                     No messages yet.
-                   </div>
+                    <div className="w-full mt-32 text-gray-500 items-center justify-center flex gap-3">
+                      No messages yet.
+                    </div>
                   )}
 
-                  {messages?.map((message,index)=>(
-                    <div 
-                    key={index}
-                    className={`mb-4 ${message.role ==="user" ?"text-right" :"text-left"}`}>
-                      <div className={`inline-block rounded-lg p-4 ${message.role==='user'?"bg-black text-white":"bg-muted"}`}>
-                        <ReactMarkdown
-                        children={message.content}
-                        remarkPlugins={[remarkGfm]}
-
-                        />
+                  {messages?.map((message) => (
+                    <div key={message.id} className={`mb-4 ${message.role === "user" ? "text-right" : "text-left"}`}>
+                      <div
+                        className={`inline-block rounded-lg p-4 ${message.role === "user" ? "bg-black text-white" : "bg-muted"}`}
+                      >
+                        {message.content}
                       </div>
                     </div>
                   ))}
-                 {isLoading && (
-                  <div className="w-full items-center flex justify-center gap-3">
-                    <Loader2 className=" animate-spin h-2 w-5 text-primary" />
-                    <button className="underline"
-                    type="button"
-                    onClick={()=>stop()}>
-                      abort
-                    </button>
-                  </div>
-                 )}
-                  {error && (
-                  <div className="w-full flex items-center  justify-center gap-3">
-                    <div >An error occurred.</div>
-                    <button 
-                    className="underline"
-                    type="button"
-                    onClick={() => reload()}>
-                      Retry
-                    </button>
-                  </div>
-                 )}
-                  <div ref={scrollRef}>
 
-                  </div>
+                  {isLoading && (
+                    <div className="w-full items-center flex justify-center gap-3">
+                      <Loader2 className="animate-spin h-2 w-5 text-primary" />
+                      <button className="underline" type="button" onClick={() => stop()}>
+                        abort
+                      </button>
+                    </div>
+                  )}
+
+                  {error && (
+                    <div className="w-full flex items-center justify-center gap-3">
+                      <div>{error.message || "An error occurred. Please try again."}</div>
+                      <button className="underline" type="button" onClick={() => reload()}>
+                        Retry
+                      </button>
+                    </div>
+                  )}
+
+                  <div ref={scrollRef}></div>
                 </ScrollArea>
               </CardContent>
               <CardFooter>
-                <form onSubmit={handleSubmit} 
-                className="flex w-full items-center space-x-2">
-                    <Input 
+                <form onSubmit={handleSubmit} className="flex w-full items-center space-x-2">
+                  <Input
                     value={input}
                     onChange={handleInputChange}
                     className="flex-1"
                     placeholder="Type your Message here..."
-                    />
-                    <Button type="submit" className="size-9" disabled={isLoading} size="icon">
-                      <Send className="size-4"/>
-                    </Button>
+                  />
+                  <Button type="submit" className="size-9" disabled={isLoading} size="icon">
+                    <Send className="size-4" />
+                  </Button>
                 </form>
               </CardFooter>
             </Card>
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       {/* Other components and content */}
     </>
-  );
+  )
 }
+
