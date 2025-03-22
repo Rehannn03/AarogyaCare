@@ -27,5 +27,6 @@ interface UserStore {
 export const useUserStore = create<UserStore>((set) => ({
   user: null,
   update: (user) => set({ user }),
+  logout: () => set({ user: null }),
 }));
 

@@ -7,6 +7,7 @@ import { MdEdit, MdPhotoCamera } from "react-icons/md"
 import { useToast } from "@/components/ui/use-toast"
 
 import { fetchAndSetUserStore } from "@/lib/fetchAndSetUserStore"
+import { useCurrent } from "@/features/getCurrent"
 // import { MdPhotoCamera } from "react-icons/md";
 // import { FaCheckCircle } from "react-icons/fa";
 // {
@@ -59,6 +60,10 @@ const page = () => {
   const fileInputRef = React.createRef()
   const { toast } = useToast()
 
+  const {User,isPending}=useCurrent()
+
+  console.log(User);
+  
   // useEffect(() => {
   //   console.log(user);
   // }

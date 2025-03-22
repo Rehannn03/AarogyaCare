@@ -2,16 +2,30 @@
 import React, { useEffect } from "react";
 import { useUserStore } from "@/stores/store";
 import { fetchAndSetUserStore } from "@/lib/fetchAndSetUserStore";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import SideModal from "@/components/SideModal/SideModal";
+import { useCurrent } from "@/features/getCurrent";
+
 
 export default function DashboardLayout({ children }) {
   const { user, update } = useUserStore();
   const router = useRouter();
+  const {User,isPending}=useCurrent()
+  console.log(User);
+
+  
+ 
 
   useEffect(() => {
     if (!user) {
-      fetchAndSetUserStore(update);
+      console.log("fetching user");
+      
+      const isloggedIn=fetchAndSetUserStore(update);
+      console.log("isloggedIn",isloggedIn);
+      
+      if(!isloggedIn){
+        redirect("/sign-in");
+      }
     } else if (user.role !== "doctor" && user.role !== "admin") {
       router.push("/dashboard");
     } 

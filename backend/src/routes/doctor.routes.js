@@ -16,7 +16,7 @@ const router = express.Router();
 router.post('/updateInfo',verifyJWT,updateInfo)
 router.get('/getDoctor',verifyJWT,getDoctor)
 router.get('/getAppointments',verifyJWT,getAppointments)
-router.get('/getAllDoctors',verifyJWT,getAllDoctors)
+router.get('/getAllDoctors',getAllDoctors)
 router.patch('/updateAppointment',verifyJWT,updateAppointment)
 router.post('/fillConsultation',verifyJWT,fillConsultation)
 router.get('/getSpecialistCount',verifyJWT,getSpecialistCount)
