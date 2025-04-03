@@ -1,3 +1,4 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
@@ -34,85 +35,92 @@ export function DashboardSidebar() {
     {
       name: "Dashboard",
       icon: <IoStatsChart className="h-5 w-5" />,
-      link: "/dashboard/dietician",
+      link: "/dietician",
       allowed: ["dietitian", "admin"],
     },
     {
       name: "Patients",
       icon: <FaUserFriends className="h-5 w-5" />,
-      link: "/patients",
+      link: "/dietician/patients",
       allowed: ["dietitian", "admin"],
     },
     {
       name: "Diet Plans",
       icon: <IoFastFood className="h-5 w-5" />,
-      link: "/diet-plans",
+      link: "/dietician/diet-plans",
       allowed: ["dietitian", "admin"],
     },
     {
       name: "Appointments",
       icon: <IoCalendarClear className="h-5 w-5" />,
-      link: "/appointments",
+      link: "/dietician/appointments",
       allowed: ["dietitian", "admin"],
     },
     {
       name: "Messages",
       icon: <MdMessage className="h-5 w-5" />,
-      link: "/chat",
+      link: "/dietician/chat",
       allowed: ["dietitian", "admin"],
     },
     {
       name: "Settings",
       icon: <FaCog className="h-5 w-5" />,
-      link: "/settings",
+      link: "/dietician/settings",
       allowed: ["dietitian", "admin"],
     },
   ]
 
   return (
-    <div className="flex h-screen flex-col bg-primary text-primary-foreground">
-      <div className="flex justify-center p-6">
-        <Link href="/">
-          <div className="flex items-center gap-2">
-          <Image src="/ArogayaCareLogo.svg" height={1000} width={1000} className="mb-12 h-10 w-fit" priority alt="logo" />
-          </div>
-        </Link>
-      </div>
-
-      <ul className="mb-4 flex flex-1 flex-col gap-2 overflow-auto px-4 pb-6">
-        {menuItems.map(
-          (item, index) =>
-            item.allowed.includes(userRole) && (
-              <li key={index}>
-                <Link href={item.link}>
-                  <button
-                    className={`font-medium transition-all text-sm py-3 rounded-lg w-full flex items-center gap-4 px-4 capitalize ${
-                      pathname === item.link ? "bg-white/30 text-white" : "text-white/80 hover:bg-white/10"
-                    }`}
-                    type="button"
-                    onClick={() => setActiveItem(index)}
-                  >
-                    {item.icon}
-                    <p className="block antialiased font-sans text-base leading-relaxed text-inherit">{item.name}</p>
-                  </button>
-                </Link>
-              </li>
-            ),
-        )}
-      </ul>
-
-      {/* Sign Out Button */}
-      <div className="mt-auto px-4 pb-6">
-        <button
-          className="font-medium transition-all text-sm py-3 rounded-lg bg-red-500 hover:bg-red-600 text-white w-full flex items-center gap-4 px-4 capitalize"
-          type="button"
-          onClick={handleSignOut}
-        >
-          <FaSignOutAlt className="h-5 w-5" />
-          <p className="block antialiased font-sans text-base leading-relaxed text-inherit">Sign Out</p>
-        </button>
-      </div>
+  <div className="flex  h-full flex-col bg-primary text-primary-foreground">
+    {/* Logo Section */}
+    <div className="flex justify-center p-6">
+      <Link href="/">
+        <Image
+          src="/ArogayaCareLogo.svg"
+          height={1000}
+          width={1000}
+          className="h-10 w-fit"
+          priority
+          alt="logo"
+        />
+      </Link>
     </div>
-  )
-}
 
+    {/* Menu Items - Ensure Sidebar Fills Entire Height */}
+    <ul className="flex flex-1 flex-col gap-2 overflow-auto px-4">
+      {menuItems.map((item, index) => (
+        item.allowed.includes(userRole) && (
+          <li key={index}>
+            <Link href={item.link}>
+              <button
+                className={`font-medium transition-all text-sm py-3 rounded-lg w-full flex items-center gap-4 px-4 capitalize ${
+                  pathname === item.link ? "bg-white/30 text-white" : "text-white/80 hover:bg-white/10"
+                }`}
+                type="button"
+                onClick={() => setActiveItem(index)}
+              >
+                {item.icon}
+                <p className="text-base leading-relaxed">{item.name}</p>
+              </button>
+            </Link>
+          </li>
+        )
+      ))}
+      <div className="px-4 pb-6 mt-auto">
+      <button
+        className="font-medium text-sm py-3 rounded-lg bg-red-500 hover:bg-red-600 text-white w-full flex items-center gap-4 px-4"
+        type="button"
+        onClick={handleSignOut}
+      >
+        <FaSignOutAlt className="h-5 w-5" />
+        <p>Sign Out</p>
+      </button>
+    </div>
+    </ul>
+
+    {/* Sign Out Button - This Fixes Bottom White Space Issue */}
+    
+  </div>
+);
+
+}

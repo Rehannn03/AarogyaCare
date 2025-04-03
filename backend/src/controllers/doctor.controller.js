@@ -5,7 +5,7 @@ import Doctor from "../model/doctor.model.js";
 import Appointment from "../model/appointments.model.js";
 import Consultation from "../model/consultation.model.js";
 import uploadOnCloudinary from '../utils/cloudinary.js'
-import User from "../model/user.model.js";
+
 const updateInfo=asyncHandler(async(req,res)=>{
     const user=req.user
     let degreeUrl=""
