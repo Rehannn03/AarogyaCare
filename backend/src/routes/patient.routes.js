@@ -10,6 +10,7 @@ import {
   deleteMedicine,
   deactivateMedicine,
   editMedicine,
+  reActivateMedicine,
 } from "../controllers/patient.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 import { upload } from "../middleware/multer.middleware.js";
@@ -25,5 +26,6 @@ router.post("/addMedicine", verifyJWT, addMedicine);
 router.get("/viewMedicine", verifyJWT, viewMedicine);
 router.delete("/deleteMedicine/:medicineId", verifyJWT, deleteMedicine);
 router.patch("/deactivateMedicine/:medicineId", verifyJWT, deactivateMedicine);
+router.patch("/reActivateMedicine/:medicineId", verifyJWT, reActivateMedicine);
 router.put("/editMedicine/:medicineId", verifyJWT, editMedicine);
 export default router;

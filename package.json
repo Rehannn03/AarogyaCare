@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "@pinata/sdk": "^2.1.0"
+    "@pinata/sdk": "^2.1.0",
+    "axios": "^1.8.4"
   }
 }

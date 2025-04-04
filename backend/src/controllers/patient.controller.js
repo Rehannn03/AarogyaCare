@@ -263,7 +263,7 @@ const addMedicine = asyncHandler(async (req, res) => {
   const patientId = req.user._id;
 
   const medicine = await Medicine.create({
-    patientId,
+    userId: patientId,
     medicineName,
     dosage,
     timing,
@@ -355,6 +355,24 @@ const editMedicine = asyncHandler(async (req, res) => {
   );
 });
 
+const reActivateMedicine = asyncHandler(async (req, res) => {
+  const { medicineId } = req.params;
+
+  const medicine = await Medicine.findByIdAndUpdate(medicineId, {
+    isActive: true,
+  });
+
+  if (!medicine) {
+    throw new ApiError(404, "Medicine not found");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, {
+      message: "Medicine reactivated successfully",
+    })
+  );
+});
+
 export {
   scheduleAppointment,
   viewAppointments,
@@ -367,4 +385,5 @@ export {
   deleteMedicine,
   deactivateMedicine,
   editMedicine,
+  reActivateMedicine,
 };
