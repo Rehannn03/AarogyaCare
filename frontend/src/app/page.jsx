@@ -18,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scrollarea"
 import { X, MessageCircle, Send, Loader2, ArrowDownCircleIcon } from "lucide-react"
 
 import { motion, AnimatePresence } from "framer-motion"
+import Loader from "@/components/Loader"
 
 
 
@@ -83,6 +84,16 @@ export default function Home() {
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, stop, reload, error } = useChat()
   const scrollRef = useRef(null)
+  const [isPageLoading, setIsPageLoading] = useState(true);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 3000); // Simulates a 1s loading. You can adjust/remove based on actual async logic.
+  
+    return () => clearTimeout(timeout);
+  }, []);
+  
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -112,10 +123,16 @@ export default function Home() {
   const toggleChat = () => {
     setIsChatOpen(!isChatOpen)
   }
+  
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
   return (
+    
+    <>
+    {isPageLoading ? (
+      <Loader/>
+    ) : (
     <>
       <Head>
         <title>Next.js Tailwind Example</title>
@@ -223,6 +240,8 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      </>
+    )}
       {/* Other components and content */}
     </>
   )
