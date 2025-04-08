@@ -42,10 +42,10 @@ function useChat() {
     setError(null);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/query", {
+      const response = await fetch("https://cf7e-2401-4900-5706-9b4c-e993-2e7c-755e-105d.ngrok-free.app/query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [...messages, newMessage] }),
+        body: JSON.stringify({ question: newMessage.content }),
       });
 
       if (!response.ok) {

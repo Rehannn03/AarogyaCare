@@ -39,6 +39,7 @@
     "date-fns": "^3.6.0",
     "framer-motion": "^11.11.8",
     "fullcalendar": "^6.1.15",
+    "js-cookie": "^3.0.5",
     "jsonwebtoken": "^9.0.2",
     "jspdf": "^3.0.0",
     "lucide-react": "^0.416.0",

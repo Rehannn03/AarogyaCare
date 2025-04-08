@@ -31,10 +31,6 @@ const Hero = () => {
         // Hero Section
         <RevealonScroll>
           <section className="bg-white font-title">
-            <motion.div
-              drag
-              className="h-10 w-10 bg-green-600 rounded-full absolute"
-            ></motion.div>
             <div className="flex flex-col md:flex-row justify-around">
               <div className="left-Hero flex flex-col max-w-full justify-center items-center">
                 <h1 className="text-4xl flex flex-col md:text-[4.5vw] leading-[1.1em] font-extrabold text-slate-800 p-6 tracking-tight text-center">

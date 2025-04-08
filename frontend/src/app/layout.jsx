@@ -16,10 +16,11 @@ export default async function RootLayout({ children }) {
     <html lang="en">
       <body className="bg-white">
       <NextIntlClientProvider messages={messages}>
+      <Providers>
         <UserProvider>
-          <Providers>
             <ReactQueryDevtools initialIsOpen={false} />
-            {children}</Providers></UserProvider>
+            {children}</UserProvider>
+            </Providers>
         </NextIntlClientProvider>
         <Toaster />
       </body>

@@ -45,8 +45,18 @@ async function getDoctors(speciality: string) {
     return [];
   }
 
-  return doctors.filter((doctor: any) => doctor.specialization === speciality);
+  // Normalize the target speciality
+  const normalizedSpeciality = speciality.trim().toLowerCase();
+
+  // Use regex match or string normalization for filtering
+  const filtered = doctors.filter((doctor: any) => {
+    const doctorSpec = (doctor.specialization || "").trim().toLowerCase();
+    return doctorSpec === normalizedSpeciality;
+  });
+
+  return filtered;
 }
+
 
 interface ProjectIsPageProps {
   params: { speciality: string };

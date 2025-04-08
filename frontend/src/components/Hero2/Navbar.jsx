@@ -34,35 +34,8 @@ const Navbar = () => {
 
   const {mutate:logout}= useLogout();
 
-  const logOut = async () => {
-
-    // try {
-    //   console.log("Logging out");
   
-    //   const response = await apiClient.post("/users/logout");
-    //   console.log("Logout Response:", response); // Log the full response here
-  
-    //   toast({
-    //     title: "Logged Out",
-    //     description: response.data.message,
-    //   });
-     
-    //   update({ user: null });
-    //   setIsLogOut(true);
-    //   router.push("/")   
-    //   window.location.reload();
-    // } catch (error) {
-    //   console.error("Error during logout:", error); // Log the error for further inspection
-    //   const axiosError = error;
-    //   let errorMessage = axiosError.response?.data.message || "Something went wrong!";
-    //   toast({
-    //     title: "Sign Out Failed",
-    //     description: errorMessage,
-    //     variant: "destructive",
-    //   });
-    // }
-  };
-  
+  console.log(user);
   
   const handleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
