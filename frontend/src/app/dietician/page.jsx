@@ -1,439 +1,464 @@
-"use client"
+"use client";
+import React from 'react';
 
-import { useState } from "react"
-import { Users, Apple, CalendarCheck, TrendingUp, Clock, ArrowUp, ArrowDown } from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Progress } from "@/components/ui/progress"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { PatientCard } from "@/features/dietician/components/patient-card"
-import { AppointmentCard } from "@/features/dietician/components/appointment-card"
 
-const metrics = [
-  {
-    title: "Total Patients",
-    value: "42",
-    change: "+2 this week",
-    icon: <Users className="h-6 w-6" />,
-    trend: "up",
-  },
-  {
-    title: "Active Diet Plans",
-    value: "28",
-    change: "+3 this month",
-    icon: <Apple className="h-6 w-6" />,
-    trend: "up",
-  },
-  {
-    title: "Appointments Today",
-    value: "8",
-    change: "2 remaining",
-    icon: <CalendarCheck className="h-6 w-6" />,
-    trend: "neutral",
-  },
-  {
-    title: "Avg. Consultation",
-    value: "45m",
-    change: "5m less than last month",
-    icon: <Clock className="h-6 w-6" />,
-    trend: "down",
-  },
-]
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import {
+  Users,
+  MessageSquare,
+  Calendar,
+  TrendingUp,
+  Star,
+  FileText,
+  ChevronRight,
+  Activity
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-export default function Dashboard() {
-  const [timeRange, setTimeRange] = useState("week")
+
+// Mock data
+const patientStats = {
+  currentWeight: 178,
+  targetWeight: 165,
+  caloriesConsumed: 1830,
+  caloriesGoal: 2100,
+  waterConsumed: 6,
+  waterGoal: 8,
+  daysStreak: 12,
+  nextAppointment: 'Tomorrow, 10:00 AM',
+  unreadMessages: 3,
+  completedTasks: 4,
+  totalTasks: 6
+};
+
+const doctorStats = {
+  totalPatients: 28,
+  activePatients: 22,
+  pendingAppointments: 5,
+  unreadMessages: 7,
+  upcomingAppointments: [
+    { id: 1, patient: 'Alex Smith', time: 'Today, 2:00 PM', status: 'confirmed' },
+    { id: 2, patient: 'Jamie Wilson', time: 'Today, 3:30 PM', status: 'confirmed' },
+    { id: 3, patient: 'Jordan Lee', time: 'Tomorrow, 10:00 AM', status: 'pending' }
+  ],
+  recentPatients: [
+    { id: 1, name: 'Alex Smith', status: 'On track', progress: 85 },
+    { id: 2, name: 'Jamie Wilson', status: 'Needs attention', progress: 60 },
+    { id: 3, name: 'Jordan Lee', status: 'New plan', progress: 15 }
+  ]
+};
+
+const Dashboard = () => {
+    const router = useRouter();
+  
+    const user = {
+      name: "Dr. John", // Replace with actual context value later
+      role: "doctor", // or "doctor" or "admin"
+    };  
+
+const renderDoctorDashboard = () => (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">Welcome back, {user?.name}</h1>
+
+      {/* Top Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Patients
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <Users className="h-4 w-4 text-primary mr-2" />
+              <div className="text-2xl font-bold">{doctorStats.totalPatients}</div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {doctorStats.activePatients} active patients
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Unread Messages
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <MessageSquare className="h-4 w-4 text-primary mr-2" />
+              <div className="text-2xl font-bold">{doctorStats.unreadMessages}</div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Tap to view your messages</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Appointments
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <Calendar className="h-4 w-4 text-primary mr-2" />
+              <div className="text-2xl font-bold">{doctorStats.pendingAppointments}</div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Pending confirmations</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Appointments and Progress */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Upcoming Appointments */}
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle>Upcoming Appointments</CardTitle>
+            <CardDescription>Your schedule for the next 24 hours</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {doctorStats.upcomingAppointments.map((appointment) => (
+                <div key={appointment.id} className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium">{appointment.patient}</div>
+                    <div className="text-sm text-muted-foreground">{appointment.time}</div>
+                  </div>
+                  <Button
+                    variant={appointment.status === "confirmed" ? "outline" : "default"}
+                    size="sm"
+                    onClick={() => router.push("/appointments")}
+                  >
+                    {appointment.status === "confirmed" ? "View" : "Confirm"}
+                  </Button>
+                </div>
+              ))}
+            </div>
+            <Button
+              variant="ghost"
+              className="w-full mt-4 flex items-center justify-center"
+              onClick={() => router.push("/appointments")}
+            >
+              View all appointments
+              <ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Patient Progress */}
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle>Patient Progress</CardTitle>
+            <CardDescription>Recent patient activity</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {doctorStats.recentPatients.map((patient) => (
+                <div key={patient.id} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="font-medium">{patient.name}</div>
+                    <div className="text-sm text-muted-foreground">{patient.status}</div>
+                  </div>
+                  <Progress value={patient.progress} className="h-2" />
+                </div>
+              ))}
+            </div>
+            <Button
+              variant="ghost"
+              className="w-full mt-4 flex items-center justify-center"
+              onClick={() => router.push("/patients")}
+            >
+              View all patients
+              <ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center justify-center"
+                onClick={() => router.push("/diet-plans")}
+              >
+                <FileText className="h-6 w-6 mb-2" />
+                <span>Create Diet Plan</span>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center justify-center"
+                onClick={() => router.push("/messages")}
+              >
+                <MessageSquare className="h-6 w-6 mb-2" />
+                <span>Send Message</span>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center justify-center"
+                onClick={() => router.push("/appointments")}
+              >
+                <Calendar className="h-6 w-6 mb-2" />
+                <span>Schedule Appointment</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+
+  const renderPatientDashboard = () => (
+    <div className="space-y-6 p-6">
+      <h1 className="text-2xl font-bold">Welcome back, John Doe</h1>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Weight Progress</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <TrendingUp className="h-4 w-4 text-primary mr-2" />
+              <div className="text-2xl font-bold">{patientStats.currentWeight} lbs</div>
+            </div>
+            <div className="mt-2 space-y-1">
+              <div className="text-xs text-muted-foreground">
+                Target: {patientStats.targetWeight} lbs
+              </div>
+              <Progress
+                value={
+                  100 -
+                  ((patientStats.currentWeight - patientStats.targetWeight) /
+                    (patientStats.currentWeight - patientStats.targetWeight + 30)) *
+                    100
+                }
+                className="h-2"
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Daily Streak</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center">
+              <Star className="h-4 w-4 text-primary mr-2" />
+              <div className="text-2xl font-bold">{patientStats.daysStreak} days</div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">Keep up the good work!</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Next Appointment</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{patientStats.nextAppointment}</div>
+            <div className="flex items-center mt-1">
+              <div className="h-2 w-2 rounded-full bg-green-500 mr-2"></div>
+              <p className="text-xs text-muted-foreground">Confirmed with Dr. Sarah</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Today's Progress</CardTitle>
+            <CardDescription>Your nutrition and activity tracking</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {/* Calories */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="font-medium">Calories</div>
+                  <div className="text-sm">
+                    {patientStats.caloriesConsumed} / {patientStats.caloriesGoal} kcal
+                  </div>
+                </div>
+                <Progress
+                  value={
+                    (patientStats.caloriesConsumed / patientStats.caloriesGoal) * 100
+                  }
+                  className="h-2"
+                />
+              </div>
+
+              {/* Water */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="font-medium">Water</div>
+                  <div className="text-sm">
+                    {patientStats.waterConsumed} / {patientStats.waterGoal} glasses
+                  </div>
+                </div>
+                <Progress
+                  value={
+                    (patientStats.waterConsumed / patientStats.waterGoal) * 100
+                  }
+                  className="h-2"
+                />
+              </div>
+
+              {/* Tasks */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="font-medium">Tasks</div>
+                  <div className="text-sm">
+                    {patientStats.completedTasks} / {patientStats.totalTasks} completed
+                  </div>
+                </div>
+                <Progress
+                  value={
+                    (patientStats.completedTasks / patientStats.totalTasks) * 100
+                  }
+                  className="h-2"
+                />
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              className="w-full mt-4 flex items-center justify-center"
+              onClick={() => router.push('/progress')}
+            >
+              View detailed progress
+              <ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Diet Plan</CardTitle>
+            <CardDescription>Personalized nutrition plan</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-medium text-sm">Breakfast</h3>
+                <p className="text-sm text-muted-foreground">
+                  Oatmeal with berries and nuts
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium text-sm">Lunch</h3>
+                <p className="text-sm text-muted-foreground">
+                  Grilled chicken salad with olive oil dressing
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium text-sm">Dinner</h3>
+                <p className="text-sm text-muted-foreground">
+                  Baked salmon with roasted vegetables
+                </p>
+              </div>
+              <div>
+                <h3 className="font-medium text-sm">Snacks</h3>
+                <p className="text-sm text-muted-foreground">
+                  Greek yogurt, apple with almond butter
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              className="w-full mt-4 flex items-center justify-center"
+              onClick={() => router.push('/my-diet-plan')}
+            >
+              View full diet plan
+              <ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center justify-center"
+                onClick={() => router.push('/progress')}
+              >
+                <Activity className="h-6 w-6 mb-2" />
+                <span>Log Meal</span>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center justify-center"
+                onClick={() => router.push('/messages')}
+              >
+                <MessageSquare className="h-6 w-6 mb-2" />
+                <span>
+                  Message Doctor
+                  {patientStats.unreadMessages > 0 && (
+                    <span className="inline-block px-1.5 py-0.5 ml-1 text-xs bg-primary text-white rounded-full">
+                      {patientStats.unreadMessages}
+                    </span>
+                  )}
+                </span>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto py-4 flex flex-col items-center justify-center"
+                onClick={() => router.push('/appointments')}
+              >
+                <Calendar className="h-6 w-6 mb-2" />
+                <span>Book Appointment</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+
+  const renderAdminDashboard = () => (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>System Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>This is the admin dashboard. Here you can manage users and system settings.</p>
+            <Button className="mt-4" onClick={() => navigate('/users')}>
+              Manage Users
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="flex-1 space-y-6 p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
-            {new Date().toLocaleDateString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </p>
-        </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select time range" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="week">Last 7 Days</SelectItem>
-            <SelectItem value="month">Last 30 Days</SelectItem>
-            <SelectItem value="year">Last Year</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        <>
+      {user?.role === 'doctor' && renderDoctorDashboard()}
+      {user?.role === 'patient' && renderPatientDashboard()}
+      {user?.role === 'admin' && renderAdminDashboard()}
+      </>
+  );
+};
 
-      {/* Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {metrics.map((metric, index) => (
-          <Card key={index}>
-            <CardContent className="p-6">
-              <div className="flex justify-between items-start">
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">{metric.title}</p>
-                  <p className="text-2xl font-bold">{metric.value}</p>
-                </div>
-                <div
-                  className={`p-2 rounded-lg ${
-                    metric.trend === "up"
-                      ? "bg-emerald-50 text-emerald-600"
-                      : metric.trend === "down"
-                        ? "bg-red-50 text-red-600"
-                        : "bg-gray-50 text-gray-600"
-                  }`}
-                >
-                  {metric.icon}
-                </div>
-              </div>
-              <div className="mt-4 flex items-center">
-                {metric.trend === "up" && <ArrowUp className="h-4 w-4 text-emerald-600 mr-1" />}
-                {metric.trend === "down" && <ArrowDown className="h-4 w-4 text-red-600 mr-1" />}
-                <span
-                  className={`text-sm ${
-                    metric.trend === "up"
-                      ? "text-emerald-600"
-                      : metric.trend === "down"
-                        ? "text-red-600"
-                        : "text-gray-600"
-                  }`}
-                >
-                  {metric.change}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-4">
-              <CardHeader>
-                <CardTitle>Diet Plan Compliance</CardTitle>
-                <CardDescription>Patient adherence to recommended diet plans</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium">Weight Loss Plans</span>
-                    </div>
-                    <span className="text-sm text-muted-foreground">78%</span>
-                  </div>
-                  <Progress value={78} className="h-2" />
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium">Diabetes Management</span>
-                    </div>
-                    <span className="text-sm text-muted-foreground">92%</span>
-                  </div>
-                  <Progress value={92} className="h-2" />
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium">Heart Health Plans</span>
-                    </div>
-                    <span className="text-sm text-muted-foreground">65%</span>
-                  </div>
-                  <Progress value={65} className="h-2" />
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium">Sports Nutrition</span>
-                    </div>
-                    <span className="text-sm text-muted-foreground">89%</span>
-                  </div>
-                  <Progress value={89} className="h-2" />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-                <CardDescription>Your latest patient interactions</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center">
-                    <div className="mr-2 h-2 w-2 rounded-full bg-green-500" />
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium leading-none">Diet plan updated for Sarah Johnson</p>
-                      <p className="text-sm text-muted-foreground">Today, 10:30 AM</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center">
-                    <div className="mr-2 h-2 w-2 rounded-full bg-blue-500" />
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium leading-none">New appointment with Michael Brown</p>
-                      <p className="text-sm text-muted-foreground">Today, 9:15 AM</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center">
-                    <div className="mr-2 h-2 w-2 rounded-full bg-yellow-500" />
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium leading-none">Progress note added for David Wilson</p>
-                      <p className="text-sm text-muted-foreground">Yesterday, 4:45 PM</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center">
-                    <div className="mr-2 h-2 w-2 rounded-full bg-purple-500" />
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium leading-none">New message from Emily Davis</p>
-                      <p className="text-sm text-muted-foreground">Yesterday, 2:30 PM</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <div>
-                  <CardTitle>Recent Patients</CardTitle>
-                  <CardDescription>Your most recently updated patient profiles</CardDescription>
-                </div>
-                <Button variant="outline" size="sm">
-                  View All
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <PatientCard
-                    name="Sarah Johnson"
-                    age={34}
-                    condition="Weight Loss"
-                    lastVisit="Today"
-                    progress={68}
-                    imageSrc="/placeholder.svg?height=40&width=40"
-                  />
-                  <PatientCard
-                    name="Michael Brown"
-                    age={52}
-                    condition="Diabetes Type 2"
-                    lastVisit="Yesterday"
-                    progress={92}
-                    imageSrc="/placeholder.svg?height=40&width=40"
-                  />
-                  <PatientCard
-                    name="Emily Davis"
-                    age={28}
-                    condition="Sports Nutrition"
-                    lastVisit="3 days ago"
-                    progress={85}
-                    imageSrc="/placeholder.svg?height=40&width=40"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <div>
-                  <CardTitle>Upcoming Appointments</CardTitle>
-                  <CardDescription>Your schedule for today and tomorrow</CardDescription>
-                </div>
-                <Button variant="outline" size="sm">
-                  View All
-                </Button>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <AppointmentCard
-                    patientName="David Wilson"
-                    time="Today, 2:00 PM"
-                    duration="45 minutes"
-                    type="Follow-up"
-                    imageSrc="/placeholder.svg?height=40&width=40"
-                  />
-                  <AppointmentCard
-                    patientName="Jennifer Martinez"
-                    time="Today, 3:30 PM"
-                    duration="60 minutes"
-                    type="Initial Consultation"
-                    imageSrc="/placeholder.svg?height=40&width=40"
-                  />
-                  <AppointmentCard
-                    patientName="Robert Taylor"
-                    time="Tomorrow, 10:00 AM"
-                    duration="30 minutes"
-                    type="Diet Review"
-                    imageSrc="/placeholder.svg?height=40&width=40"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="analytics" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Patient Demographics</CardTitle>
-                <CardDescription>Age and gender distribution of your patients</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px] flex items-center justify-center">
-                <div className="text-center">
-                  <TrendingUp className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <h3 className="mt-4 text-lg font-medium">Demographics Chart</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">Patient demographics will be displayed here</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Diet Plan Distribution</CardTitle>
-                <CardDescription>Types of diet plans assigned to patients</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px] flex items-center justify-center">
-                <div className="text-center">
-                  <TrendingUp className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <h3 className="mt-4 text-lg font-medium">Diet Plan Chart</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">Diet plan distribution will be displayed here</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Patient Progress</CardTitle>
-                <CardDescription>Weight loss and health improvements over time</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px] flex items-center justify-center">
-                <div className="text-center">
-                  <TrendingUp className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <h3 className="mt-4 text-lg font-medium">Progress Chart</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">Patient progress will be displayed here</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Consultation Trends</CardTitle>
-                <CardDescription>Number of consultations over time</CardDescription>
-              </CardHeader>
-              <CardContent className="h-[300px] flex items-center justify-center">
-                <div className="text-center">
-                  <TrendingUp className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <h3 className="mt-4 text-lg font-medium">Consultation Chart</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">Consultation trends will be displayed here</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="reports" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Reports</CardTitle>
-              <CardDescription>Generate and view reports about your practice</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="p-4">
-                  <div className="flex flex-col items-center text-center">
-                    <Users className="h-8 w-8 mb-2" />
-                    <h3 className="font-medium">Patient Report</h3>
-                    <p className="text-sm text-muted-foreground mt-1">Summary of all patient data</p>
-                    <Button className="mt-4" size="sm">
-                      Generate
-                    </Button>
-                  </div>
-                </Card>
-
-                <Card className="p-4">
-                  <div className="flex flex-col items-center text-center">
-                    <Apple className="h-8 w-8 mb-2" />
-                    <h3 className="font-medium">Diet Plan Report</h3>
-                    <p className="text-sm text-muted-foreground mt-1">Analysis of diet plan effectiveness</p>
-                    <Button className="mt-4" size="sm">
-                      Generate
-                    </Button>
-                  </div>
-                </Card>
-
-                <Card className="p-4">
-                  <div className="flex flex-col items-center text-center">
-                    <CalendarCheck className="h-8 w-8 mb-2" />
-                    <h3 className="font-medium">Appointment Report</h3>
-                    <p className="text-sm text-muted-foreground mt-1">Summary of appointments</p>
-                    <Button className="mt-4" size="sm">
-                      Generate
-                    </Button>
-                  </div>
-                </Card>
-              </div>
-
-              <div className="mt-6">
-                <h3 className="text-lg font-medium mb-4">Recent Reports</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">Monthly Patient Summary</p>
-                      <p className="text-sm text-muted-foreground">Generated on May 1, 2023</p>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Download
-                    </Button>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">Diet Plan Effectiveness</p>
-                      <p className="text-sm text-muted-foreground">Generated on April 15, 2023</p>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Download
-                    </Button>
-                  </div>
-
-                  <div className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <p className="font-medium">Quarterly Business Report</p>
-                      <p className="text-sm text-muted-foreground">Generated on April 1, 2023</p>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Download
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
-    </div>
-  )
-}
-
+export default Dashboard;
