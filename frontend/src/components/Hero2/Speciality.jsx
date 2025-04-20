@@ -2,16 +2,17 @@
 import { motion } from 'framer-motion';
 import RevealonScroll from '../../RevealonScroll'
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 
 const Speciality = () => {
   const t =useTranslations("Speciality")
   const specialities = [
-    { key: 'generalPhysician', icon: '🩺' },
-    { key: 'gynecologist', icon: '🤰' },
-    { key: 'dermatologist', icon: '💆‍♀️' },
-    { key: 'pediatricians', icon: '👶' },
-    { key: 'neurologist', icon: '🧠' },
-    { key: 'gastroenterologist', icon: '🍽️' },
+    { key: 'Cardiologist', icon: '🫀' },
+    { key: 'Gynecologist', icon: '🤰' },
+    { key: 'Dermatology', icon: '💆‍♀️' },
+    { key: 'Pediatricians', icon: '👶' },
+    { key: 'Neurologists', icon: '🧠' },
+    { key: 'Gastroenterologist', icon: '🍽️' },
   ];
   
 
@@ -30,10 +31,12 @@ const Speciality = () => {
       <motion.div  className="flex flex-wrap justify-center gap-8 ">
       {specialities.map((speciality, index) => (
   <div key={index} className="flex flex-col items-center text-center space-y-2 pb-[30px] hover:-translate-y-5 hover:border-indigo-500 transition-all duration-300 hover:border-b-4 cursor-pointer">
+    <Link href={`/doctors/${speciality.key}`}>
     <div className="w-36 h-36 bg-white rounded-full flex items-center justify-center text-[5vh] ">
       {speciality.icon}
     </div>
-    <p className="text-gray-800 font-semibold text-[120%]">{t(speciality.key)}</p>
+    <p className="text-gray-800 font-semibold text-[120%]">{speciality.key}</p>
+    </Link>
   </div>
 ))}
       </motion.div>

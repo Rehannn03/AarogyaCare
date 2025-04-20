@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { HealthTrendsChart } from "@/components/dashboard/HealthTrendsChart"
 import { BloodPressureChart } from "@/components/dashboard/BloodPressureChart"
 import { GlucoseLevelChart } from "@/components/dashboard/GlucoseLevelChart"
+import { useUserStore } from "@/stores/store";
+
 
 const healthMetrics = [
   {
@@ -31,7 +33,9 @@ const healthMetrics = [
   },
 ]
 
-export default function PatientDashboard() {
+export default  function PatientDashboard() {
+  const { user, update } =  useUserStore();
+  
   return (
     <div className="container mx-auto p-6 space-y-8">
       {/* Hero Section */}

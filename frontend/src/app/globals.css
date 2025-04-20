@@ -11,6 +11,10 @@
   display: none;
 }
 
+html, body {
+  height: 100%;
+}
+
 @layer base {
   :root {
     --background: 251 0% 95%;
@@ -19,7 +23,7 @@
     --card-foreground: 251 0% 15%;
     --popover: 251 0% 95%;
     --popover-foreground: 251 95% 10%;
-    --primary: 251 94% 67.1%;
+    --primary: 210 90% 60%;
     --primary-foreground: 0 0% 0%;
     --secondary: 251 10% 70%;
     --secondary-foreground: 0 0% 0%;
@@ -117,7 +121,7 @@
 @layer utilities {
   /* ===== UTILITIES */
   .sidebar {
-    @apply remove-scrollbar w-full max-w-72 flex-col overflow-auto bg-black-800 px-7 py-10;
+    @apply remove-scrollbar w-full max-w-72 flex-col overflow-auto bg-neutral-800 px-7 py-10;
   }
 
   .left-sidebar {

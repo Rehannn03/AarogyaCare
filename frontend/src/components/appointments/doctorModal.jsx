@@ -75,7 +75,7 @@ const Card = ({row}) => {
         <div className="p-6 w-full shadow-xl rounded-2xl bg-white hover:bg-accent">
             <div className=" flex justify-between mb-4">
                 <div className="flex flex-row items-center">
-                        <Image src={row.userId.avatar} alt={row.userId.name} width={48} height={48} className="w-12 h-12 rounded-full mr-4 object-cover" /> 
+                        {/* <Image src={row.userId.avatar} alt={row.userId.name} width={48} height={48} className="w-12 h-12 rounded-full mr-4 object-cover" />  */}
                     <div>
                         <div className="flex mb-2">
                             <h3 className="font-medium text-xl"> {row.userId.name} </h3>

@@ -7,6 +7,7 @@ import RevealonScroll from "../../RevealonScroll";
 import { useTranslations } from "next-intl";
 
 import Link from "next/link";
+import Loader from "../Loader";
 
 const Hero = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,21 +21,11 @@ const Hero = () => {
     <>
       {isLoading ? (
         // Loader Component
-        <div className="flex items-center justify-center h-screen bg-white">
-          <div className="flex flex-row gap-2">
-  <div className="w-4 h-4 rounded-full bg-[#84CC16] animate-bounce [animation-delay:.7s]"></div>
-  <div className="w-4 h-4 rounded-full bg-blue-700 animate-bounce [animation-delay:.3s]"></div>
-  <div className="w-4 h-4 rounded-full bg-[#84CC16] animate-bounce [animation-delay:.7s]"></div>
-</div>
-        </div>
+        <Loader/>
       ) : (
         // Hero Section
         <RevealonScroll>
           <section className="bg-white font-title">
-            <motion.div
-              drag
-              className="h-10 w-10 bg-green-600 rounded-full absolute"
-            ></motion.div>
             <div className="flex flex-col md:flex-row justify-around">
               <div className="left-Hero flex flex-col max-w-full justify-center items-center">
                 <h1 className="text-4xl flex flex-col md:text-[4.5vw] leading-[1.1em] font-extrabold text-slate-800 p-6 tracking-tight text-center">

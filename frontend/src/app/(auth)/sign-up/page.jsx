@@ -37,10 +37,12 @@ const page = () => {
       update(tempProfile);
       console.log("This is raw data from form: ", data);
       const response = await apiClient.post("/users/register", { ...data });
+      if(response.ok){
       toast({
         title: "Success",
         description: "Sign Up Successful",
       });
+    }
       router.replace(`/sign-in`);
       setIsSubmitting(false);
     } catch (error) {

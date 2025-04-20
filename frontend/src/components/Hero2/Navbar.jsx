@@ -15,6 +15,7 @@ import apiClient from '@/api-client/apiClient';
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import Image from "next/image"
+import { useLogout } from "@/features/use-logout"
 
 const Navbar = () => {
   const { user,update} = useUserStore()
@@ -31,34 +32,10 @@ const Navbar = () => {
   const router = useRouter();
   const [isLogOut,setIsLogOut]=useState(false)
 
-  const logOut = async () => {
-    try {
-      console.log("Logging out");
+  const {mutate:logout}= useLogout();
+
   
-      const response = await apiClient.post("/users/logout");
-      console.log("Logout Response:", response); // Log the full response here
-  
-      toast({
-        title: "Success",
-        description: response.data.message,
-      });
-     
-      update({ user: null });
-      setIsLogOut(true);
-      router.push("/")   
-      window.location.reload();
-    } catch (error) {
-      console.error("Error during logout:", error); // Log the error for further inspection
-      const axiosError = error;
-      let errorMessage = axiosError.response?.data.message || "Something went wrong!";
-      toast({
-        title: "Sign Out Failed",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    }
-  };
-  
+  console.log(user);
   
   const handleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
@@ -174,7 +151,7 @@ const Navbar = () => {
             className="flex items-center gap-2 text-[#84CC16] hover:text-blue-600 transition-colors duration-200"
             onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
           >
-            {currentLanguage=== "en" ? "English" : currentLanguage === "mr" ? "मराठी" : "தமிழ்"}
+            {currentLanguage=== "en" ? "English" : currentLanguage === "mr" ? "मराठी" : currentLanguage === "mr"? "தமிழ்" : "English"}
             <ChevronDown className="w-4 h-4" />
           </button>
           {isLanguageDropdownOpen && (
@@ -227,7 +204,7 @@ const Navbar = () => {
                   {t("profile")}
                 </Link>
                 <button
-                  onClick={logOut}
+                  onClick={()=>{logout()}}
                   className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   <LogOut className="inline-block w-4 h-4 mr-2" />

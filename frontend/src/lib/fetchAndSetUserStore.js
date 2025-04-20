@@ -1,12 +1,11 @@
-import apiClient from "@/api-client/apiClient";
+import { fetchUser } from "./fetchUser";
 
 export const fetchAndSetUserStore = async (update) => {
-  try {
-    const userData = await apiClient.get("/users/profile");
-    console.log(userData);
-    const user = userData.data.data.user;
-    update(user);
-  } catch (error) {
-    console.error(error);
-  }
-};
+    const user = await fetchUser();
+    if (user) {
+      update(user);
+      return user;
+    }
+    return null;
+  };
+  

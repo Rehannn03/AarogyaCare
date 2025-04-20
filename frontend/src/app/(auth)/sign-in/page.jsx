@@ -12,11 +12,13 @@ import SubmitButton from "@/components/ui/SubmitButton";
 import apiClient from "@/api-client/apiClient";
 import Link from "next/link";
 import Image from "next/image";
+import { useLogin } from "@/features/use-login";
 
 const SignInForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const {mutate,isPending}=useLogin();
 
   const form = useForm({
     resolver: zodResolver(signInSchema),
@@ -27,21 +29,24 @@ const SignInForm = () => {
   });
 
   const onSubmit = async (data) => {
-    console.log("Submitting Form...");
-    setIsSubmitting(true);
-    try {
-      console.log("Form Data:", data);
-      const response = await apiClient.post("/users/login", data);
-      console.log("API Response:", response);
-    
-      toast({ title: "Success", description: "Sign In Successful" });
-      router.replace("/dashboard");
-    } catch (error) {
-      console.error("Login Error:", error);
-      const errorMessage = error.response?.data?.message || "Sign In Failed";
-      toast({ title: "Sign In Failed", description: errorMessage, variant: "destructive" });
-    }
-    setIsSubmitting(false);
+    console.log(data);
+    mutate(data);
+
+    // setIsSubmitting(true);
+    // try {
+    //   console.log("Form Data:", data);
+    //   const response = await apiClient.post("/users/login", data);
+    //   console.log("API Response:", response);
+    // if(response.ok){
+    //   toast({ title: "Success", description: "Sign In Successful" });
+    // }
+    //   router.replace("/dashboard");
+    // } catch (error) {
+    //   console.error("Login Error:", error);
+    //   const errorMessage = error.response?.data?.message || "Sign In Failed";
+    //   toast({ title: "Sign In Failed", description: errorMessage, variant: "destructive" });
+    // }
+    // setIsSubmitting(false);
   };
 
   return (
