@@ -1,6 +1,19 @@
 "use client"
 import { useState, useRef, useEffect } from "react"
-import { FaCalendarAlt, FaHeartbeat, FaAllergies, FaCheckCircle, FaTimesCircle, FaGenderless } from "react-icons/fa"
+import {
+  FaCalendarAlt,
+  FaHeartbeat,
+  FaAllergies,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaGenderless,
+  FaGraduationCap,
+  FaStethoscope,
+  FaBriefcase,
+  FaMoneyBillWave,
+  FaFileUpload,
+  FaFilePdf,
+} from "react-icons/fa"
 import { MdPhotoCamera, MdEdit } from "react-icons/md"
 import { BsGenderMale, BsGenderFemale } from "react-icons/bs"
 import { useUserStore } from "@/stores/store"
@@ -18,6 +31,7 @@ const Profile = () => {
   const { toast } = useToast()
   const [newProfilePicture, setNewProfilePicture] = useState(null)
   const fileInputRef = useRef(null)
+  const degreeFileInputRef = useRef(null)
 
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
@@ -34,6 +48,18 @@ const Profile = () => {
   const [profilePicture, setProfilePicture] = useState("")
   const [isEditing, setIsEditing] = useState(false)
   const ref = useRef(null)
+
+  // Doctor specific states
+  const [isDoctorSectionVisible, setIsDoctorSectionVisible] = useState(false)
+  const [specialization, setSpecialization] = useState("")
+  const [experience, setExperience] = useState("")
+  const [qualification, setQualification] = useState("")
+  const [consultationFee, setConsultationFee] = useState("")
+  const [selectedDegree, setSelectedDegree] = useState(null)
+  const [degreeFileName, setDegreeFileName] = useState("")
+  const [degreeUrl, setDegreeUrl] = useState("")
+  const [isSubmittingDegree, setIsSubmittingDegree] = useState(false)
+  const [doctorData, setDoctorData] = useState(null)
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -55,6 +81,12 @@ const Profile = () => {
           setIsPregnant(user.profile?.isPregnant || "")
           setIsBP(user.profile?.isBP || "")
           setProfilePicture(user.avatar || "https://www.kindpng.com/picc/m/78-785827_user-profile-avatar-login-account")
+
+          // Check if user is a doctor
+          if (user.role === "doctor") {
+            setIsDoctorSectionVisible(true)
+            fetchDoctorData()
+          }
         })
       } catch (error) {
         console.error("Error fetching user data:", error)
@@ -71,11 +103,39 @@ const Profile = () => {
     fetchUser()
   }, [toast])
 
+  const fetchDoctorData = async () => {
+    try {
+      const response = await apiClient.get("/doctors")
+      const doctorData = response.data?.data?.doctor
+
+      if (doctorData) {
+        setDoctorData(doctorData)
+        setSpecialization(doctorData.specialization || "")
+        setExperience(doctorData.experience || "")
+        setQualification(doctorData.qualification || "")
+        setConsultationFee(doctorData.consultationFee || "")
+        setDegreeUrl(doctorData.degree || "")
+
+        // Extract filename from URL if available
+        if (doctorData.degree) {
+          const urlParts = doctorData.degree.split("/")
+          setDegreeFileName(urlParts[urlParts.length - 1])
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching doctor data:", error)
+      // Don't show error toast as the user might not be a doctor yet
+    }
+  }
+
   const triggerFileInput = () => {
     setPreview(true)
     fileInputRef.current.click()
   }
-  //TOOD: FIX
+
+  const triggerDegreeFileInput = () => {
+    degreeFileInputRef.current.click()
+  }
 
   const handleEditClick = async () => {
     if (isEditing) {
@@ -194,6 +254,78 @@ const Profile = () => {
       setSelectedImg(reader.result)
     }
     reader.readAsDataURL(file)
+  }
+
+  const handleDegreeFileUpload = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setSelectedDegree(file)
+      setDegreeFileName(file.name)
+    }
+  }
+
+  const handleDoctorInfoSubmit = async (e) => {
+    e.preventDefault()
+
+    if (!specialization || !experience || !qualification || !consultationFee) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setIsSubmittingDegree(true)
+
+    try {
+      const formData = new FormData()
+
+      // Only append the file if a new one is selected
+      if (selectedDegree) {
+        formData.append("degree", selectedDegree)
+      }
+
+      formData.append("specialization", specialization)
+      formData.append("experience", experience)
+      formData.append("qualification", qualification)
+      formData.append("consultationFee", consultationFee)
+
+      const response = await apiClient.post("/doctors/updateInfo", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+
+      const updatedDoctor = response.data?.data?.doctor
+
+      if (updatedDoctor) {
+        setDoctorData(updatedDoctor)
+        setDegreeUrl(updatedDoctor.degree || "")
+      }
+
+      toast({
+        title: "Doctor Information Updated",
+        description: "Your professional information has been updated successfully.",
+        variant: "success",
+      })
+
+      // Refresh doctor data
+      fetchDoctorData()
+    } catch (error) {
+      console.error("Error updating doctor information:", error)
+      toast({
+        title: "Update Failed",
+        description: error.response?.data?.message || "Failed to update doctor information.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmittingDegree(false)
+    }
+  }
+
+  const openDegreePreview = () => {
+    if (degreeUrl) {
+      window.open(degreeUrl, "_blank")
+    }
   }
 
   return (
@@ -451,9 +583,173 @@ const Profile = () => {
           </form>
         </div>
       )}
+
+      {/* Doctor Professional Details Section */}
+      {!isLoading && isDoctorSectionVisible && (
+        <div className="mt-10 w-full max-w-4xl p-6 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl shadow-md">
+          <div className="flex items-center mb-6">
+            <FaGraduationCap className="h-8 w-8 text-indigo-600 mr-3" />
+            <h2 className="text-2xl font-bold text-indigo-700">Professional Details</h2>
+          </div>
+
+          <form onSubmit={handleDoctorInfoSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <FaStethoscope className="h-5 w-5 text-indigo-500 mr-2" />
+                  <label className="font-medium text-gray-700">Specialization</label>
+                </div>
+                <input
+                  type="text"
+                  value={specialization}
+                  onChange={(e) => setSpecialization(e.target.value)}
+                  placeholder="e.g. Cardiology, Neurology"
+                  className="w-full px-4 py-3 text-gray-700 bg-white border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <FaBriefcase className="h-5 w-5 text-indigo-500 mr-2" />
+                  <label className="font-medium text-gray-700">Experience (years)</label>
+                </div>
+                <input
+                  type="number"
+                  value={experience}
+                  onChange={(e) => setExperience(e.target.value)}
+                  placeholder="e.g. 5"
+                  className="w-full px-4 py-3 text-gray-700 bg-white border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                  min="0"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <FaGraduationCap className="h-5 w-5 text-indigo-500 mr-2" />
+                  <label className="font-medium text-gray-700">Qualification</label>
+                </div>
+                <input
+                  type="text"
+                  value={qualification}
+                  onChange={(e) => setQualification(e.target.value)}
+                  placeholder="e.g. MD, MBBS"
+                  className="w-full px-4 py-3 text-gray-700 bg-white border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center">
+                  <FaMoneyBillWave className="h-5 w-5 text-indigo-500 mr-2" />
+                  <label className="font-medium text-gray-700">Consultation Fee (₹)</label>
+                </div>
+                <input
+                  type="number"
+                  value={consultationFee}
+                  onChange={(e) => setConsultationFee(e.target.value)}
+                  placeholder="e.g. 1000"
+                  className="w-full px-4 py-3 text-gray-700 bg-white border border-indigo-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  required
+                  min="0"
+                />
+              </div>
+            </div>
+
+            <div className="mt-8 space-y-4">
+              <div className="flex items-center">
+                <FaFilePdf className="h-5 w-5 text-indigo-500 mr-2" />
+                <label className="font-medium text-gray-700">Degree Certificate</label>
+              </div>
+
+              <div className="flex flex-col md:flex-row md:items-center gap-4">
+                <div className="flex-1">
+                  <div
+                    className={`p-4 border-2 border-dashed rounded-lg ${selectedDegree || degreeUrl ? "border-green-300 bg-green-50" : "border-indigo-300 bg-indigo-50"} flex items-center justify-between`}
+                  >
+                    <div className="flex items-center">
+                      <FaFilePdf
+                        className={`h-8 w-8 ${selectedDegree || degreeUrl ? "text-green-500" : "text-indigo-400"} mr-3`}
+                      />
+                      <div>
+                        <p className="font-medium">{degreeFileName || "No file selected"}</p>
+                        <p className="text-xs text-gray-500">Upload your degree certificate (PDF, JPG, PNG)</p>
+                      </div>
+                    </div>
+
+                    <input
+                      type="file"
+                      id="degree-upload"
+                      ref={degreeFileInputRef}
+                      className="hidden"
+                      accept=".pdf,.jpg,.jpeg,.png"
+                      onChange={handleDegreeFileUpload}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={triggerDegreeFileInput}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors flex items-center"
+                  >
+                    <FaFileUpload className="mr-2" /> Browse
+                  </button>
+
+                  {degreeUrl && (
+                    <button
+                      type="button"
+                      onClick={openDegreePreview}
+                      className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                    >
+                      View Current
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end mt-8">
+              <button
+                type="submit"
+                disabled={isSubmittingDegree}
+                className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors flex items-center shadow-md"
+              >
+                {isSubmittingDegree ? (
+                  <>
+                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                    Updating...
+                  </>
+                ) : (
+                  <>
+                    <FaCheckCircle className="mr-2" /> Save Professional Details
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+
+          {doctorData?.verified === true && (
+            <div className="mt-6 p-4 bg-green-100 border border-green-300 rounded-lg flex items-center">
+              <FaCheckCircle className="h-6 w-6 text-green-500 mr-3" />
+              <p className="text-green-700">Your doctor profile has been verified. You can now accept appointments.</p>
+            </div>
+          )}
+
+          {doctorData?.verified === false && (
+            <div className="mt-6 p-4 bg-yellow-100 border border-yellow-300 rounded-lg flex items-center">
+              <FaTimesCircle className="h-6 w-6 text-yellow-500 mr-3" />
+              <p className="text-yellow-700">
+                Your doctor profile is pending verification. You'll be notified once it's approved.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
 
 export default Profile
-

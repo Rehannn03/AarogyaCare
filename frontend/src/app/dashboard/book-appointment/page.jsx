@@ -111,36 +111,56 @@ function Appointment() {
   const bookAppointment = async () => {
     if (validateForm()) {
       console.log("Form is valid");
-      // make API req
-      const response = await apiClient.post("/patients/scheduleAppointment", {
-        doctorId: selectedDoctor._id,
-        date: selectedDate,
-        time: selectedTime,
-        day: selectedDate.getDay(),
-        symptoms: selectedSymptoms,
-        notes: "",
-      });
-      // if 200 then show the success message
-      if (response.status === 201) {
-        toast({
-          title: "Success",
-          description: response.data.message,
-          variant: "success",
-        });
-      } else {
-        // else show the error message
+      try {
+        // Format the date properly - just the date portion without time
+        const formattedDate = selectedDate.toISOString().split('T')[0];
+        
+        // Create payload matching the backend requirements
+        const payload = {
+          doctorId: selectedDoctor._id,
+          date: formattedDate,
+          time: selectedTime,
+          day: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][selectedDate.getDay()],
+          symptoms: selectedSymptoms, // Keep as array - backend expects this
+          note: "", // This is the correct field name from the controller
+          reportIds: [] // Add empty reportIds array as the controller expects it
+        };
+        
+        console.log("Sending payload:", payload);
+        
+        // Make API request with proper format
+        const response = await apiClient.post("/patients/scheduleAppointment", payload);
+
+        // if 200 or 201 then show the success message
+        if (response.status === 201 || response.status === 200) {
+          toast({
+            title: "Success",
+            description: response.data.message,
+            variant: "success",
+          });
+          
+          // clear the form
+          setSelectedType(allTypes[0].id);
+          setSelectedDoctor(null);
+          setSelectedDate(new Date());
+          setSelectedTime(null);
+          setSelectedSymptoms([]);
+        } else {
+          // else show the error message
+          toast({
+            title: "Error",
+            description: response.data.message || "Failed to book appointment",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error("Appointment booking error:", error);
         toast({
           title: "Error",
-          description: response.data.message,
+          description: error.response?.data?.message || "Failed to book appointment. Please try again.",
           variant: "destructive",
         });
       }
-      // clear the form
-      setSelectedType(allTypes[0].id);
-      setSelectedDoctor(null);
-      setSelectedDate(new Date());
-      setSelectedTime(null);
-      setSelectedSymptoms([]);
     }
   };
 
