@@ -6,219 +6,226 @@ import { useUserStore } from "@/stores/store";
 import { fetchAndSetUserStore } from "@/lib/fetchAndSetUserStore";
 import apiClient from "@/api-client/apiClient";
 import ConsultationModal from "@/components/my-appointment/ConsultationModal";
+import React from 'react';
+import { format } from "date-fns";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
+import { BiTime, BiCalendar, BiPhone, BiVideo } from "react-icons/bi";
+import { MdCancel } from "react-icons/md";
+import { useToast } from "@/components/ui/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { FaCalendarAlt, FaClock } from "react-icons/fa";
 
-function NextAppointment({ nextUpcomingAppointment, getAllAppointments }) {
-  const [timer, setTimer] = useState(null);
-  const router = useRouter();
-  const today = new Date();
-  const { user, update } = useUserStore();
-  const formatDate = (date) => {
-    return new Intl.DateTimeFormat("en-US", { dateStyle: "full" }).format(
-      new Date(date)
-    );
-  };
-  const isSameDay = (date1, date2) => {
-    return (
-      date1.getFullYear() === date2.getFullYear() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getDate() === date2.getDate()
-    );
-  };
-  const formatTimeRemaining = (timeRemaining) => {
-    const days = Math.floor(timeRemaining / (1000 * 60 * 60 * 24));
-    const hours = Math.floor(timeRemaining / (1000 * 60 * 60));
-    const minutes = Math.floor(
-      (timeRemaining % (1000 * 60 * 60)) / (1000 * 60)
-    );
-    const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+const NextAppointment = ({ nextUpcomingAppointment, getAllAppointment }) => {
+  const { toast } = useToast();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    return `${days} days ${hours}h ${minutes}m ${seconds}s`;
-  };
+  if (!nextUpcomingAppointment) {
+    return null;
+  }
 
-  const [isOpen, setIsOpen] = useState(false);
-  const toggleModal = () => {
-    setIsOpen(!isOpen);
-  };
+  // Format the date
+  const appointmentDate = new Date(nextUpcomingAppointment.date);
+  const formattedDate = format(appointmentDate, "MMMM d, yyyy");
 
-
-  useEffect(() => {
-    if (nextUpcomingAppointment) {
-      const appointmentDate = new Date(nextUpcomingAppointment.date);
-      console.log("Appointment Date:", appointmentDate);
-      console.log(nextUpcomingAppointment);
-      const updateTimer = () => {
-        const now = new Date().getTime();
-        const timeRemaining = appointmentDate - now;
-
-        if (timeRemaining <= 0) {
-          clearInterval(timer);
-          setTimer(null);
-        } else {
-          setTimer(timeRemaining);
-        }
-      };
-
-      updateTimer(); // Initial call
-      const intervalId = setInterval(updateTimer, 1000); // Update every second
-
-      return () => clearInterval(intervalId); // Cleanup on component unmount
-    }
-    console.log("Next Upcoming Appointment:", nextUpcomingAppointment);
-  }, [nextUpcomingAppointment]);
-  useEffect(() => {
-    if (!user) {
-      fetchAndSetUserStore(update);
-    }
-  }, [user, update]);
-
-  // Generate a unique room ID and link
-  const generateRoomID = () => uuid();
-  const generateConsultationLink = (roomID) =>
-    `${window.location.origin}/room/${roomID}`;
-
-  const handleConsultRedirect = async () => {
-    try {
-      console.log("Starting video consultation...");
-      if (nextUpcomingAppointment.link != "") {
-          window.open(nextUpcomingAppointment.link, "_blank");
-        return;
-      }
-
-      // Generate a unique room ID and link
-      const roomID = generateRoomID();
-      const link = `/room/${roomID}`;
-
-      console.log("Generated room ID:", roomID);
-      console.log("Generated link:", link);
-      const appointmentId = nextUpcomingAppointment._id;
-      // Update the appointment with the video consultation link
-      const updateResponse = await apiClient.patch(
-        "/doctors/activateAppointment",
-        {
-          appointmentId,
-          link,
-        }
-      );
-
-      if (updateResponse.status === 200) {
-        console.log(
-          "Appointment updated with link:",
-          updateResponse.data.data.appointment
-        );
-
-        // Redirect to the video consultation room
-        // router.push(link);
-        window.open(link, "_blank");
+  // Get time remaining until appointment
+  const getTimeUntil = () => {
+    const now = new Date();
+    const timeUntil = appointmentDate.getTime() - now.getTime();
+    
+    // If appointment is today, show hours/minutes
+    if (appointmentDate.toDateString() === now.toDateString()) {
+      const hours = Math.floor(timeUntil / (1000 * 60 * 60));
+      const minutes = Math.floor((timeUntil % (1000 * 60 * 60)) / (1000 * 60));
+      if (hours > 0) {
+        return `In ${hours} hour${hours !== 1 ? 's' : ''} ${minutes} minute${minutes !== 1 ? 's' : ''}`;
       } else {
-        console.error(
-          "Failed to update appointment:",
-          updateResponse.data.message
-        );
+        return `In ${minutes} minute${minutes !== 1 ? 's' : ''}`;
+      }
+    }
+    
+    // Otherwise show days
+    const days = Math.ceil(timeUntil / (1000 * 60 * 60 * 24));
+    return `In ${days} day${days !== 1 ? 's' : ''}`;
+  };
+
+  // Get status style
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "approved":
+        return "bg-green-500 text-white";
+      case "active":
+        return "bg-purple-500 text-white";
+      default:
+        return "bg-yellow-500 text-white";
+    }
+  };
+
+  // Cancel appointment
+  const cancelAppointment = async () => {
+    try {
+      const response = await apiClient.patch(`/patients/cancelAppointment/${nextUpcomingAppointment._id}`);
+      
+      if (response.status === 200) {
+        toast({
+          title: "Success",
+          description: "Appointment cancelled successfully",
+          variant: "success",
+        });
+        getAllAppointment();
+        setIsDialogOpen(false);
       }
     } catch (error) {
-      console.error("Error updating appointment:", error);
+      console.error("Error cancelling appointment:", error);
+      toast({
+        title: "Error",
+        description: "Failed to cancel appointment. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
-  const profile = nextUpcomingAppointment.patient.profile;
-  const symptoms = nextUpcomingAppointment.symptoms;
-  return (
-    <div className="mb-6 p-6 bg-primary border border-black rounded-lg shadow-lg flex flex-col md:flex-row">
-      <div className="mb-4 md:mb-0 w-full md:w-2/3 flex flex-col">
-        <h2 className="text-2xl font-semibold mb-2 text-white">
-          Your next upcoming appointment with{" "}
-          {nextUpcomingAppointment.patient.name}
-        </h2>
-        <div className="flex flex-col gap-1 pr-20">
-          <p className="text-lg text-white">
-            <strong>Date:</strong> {formatDate(nextUpcomingAppointment.date)}
-          </p>
-          <p className="text-lg text-white">
-            <strong>Time:</strong>{" "}
-            {nextUpcomingAppointment.time || "Not specified"}
-          </p>
-          <p className="text-lg text-white">
-            <strong>Your Note:</strong>{" "}
-            {nextUpcomingAppointment.note || "No additional notes provided."}
-          </p>
-          <div className="mb-4">
-            <h4 className="text-lg text-white pb-1">Symptoms Of The Patient</h4>
-            <ul class="space-y-2 text-left text-white">
-              {symptoms.map((symptom, index) => (
-                <li
-                  key={index}
-                  className="flex items-center space-x-2 rtl:space-x-reverse"
-                >
-                  <svg
-                    class="flex-shrink-0 w-3.5 h-3.5 text-white dark:text-green-400"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 16 12"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M1 5.917 5.724 10.5 15 1.5"
-                    />
-                  </svg>
-                  <span>{symptom}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-col w-full md:w-1/3 md:flex-row items-center md:items-start">
-        <div className="flex flex-col w-full items-end md:items-start mb-4 md:mb-0 md:w-1/3">
-          <img
-            src={nextUpcomingAppointment.patient.avatar}
-            alt={nextUpcomingAppointment.patient.name}
-            className="w-16 h-16 rounded-full object-cover"
-          />
-          <div className="text-white text-center md:text-left">
-            <p className="text-lg font-medium">
-              {nextUpcomingAppointment.patient.name}
-            </p>
-          </div>
-        </div>
-      </div>
+  // Join video call
+  const joinVideoCall = () => {
+    if (nextUpcomingAppointment.link) {
+      // Redirect to the video call page
+      window.location.href = nextUpcomingAppointment.link;
+    } else {
+      toast({
+        title: "Video call not available",
+        description: "Your doctor hasn't started the video call yet.",
+        variant: "destructive",
+      });
+    }
+  };
 
-      <div className="flex flex-row gap-3 items-center sm:items-end ">
-        {/* {(isSameDay(new Date(nextUpcomingAppointment.date), today) &&
-        (  nextUpcomingAppointment.status === "approved") ||
-        nextUpcomingAppointment.status === "active") ? ( */}
-          <button
-            onClick={handleConsultRedirect}
-            className="mt-4 md:mt-[200px] px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-          >
-            Go to Consult
-          </button>
-        {/* ) : (
-          <p className="text-white">The appointment day has passed.</p>
-        )} */}
-        {nextUpcomingAppointment.status === "active" && (
-          <button className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-            onClick={toggleModal}
-          >
-            End Consultation
-          </button>
-        )}
+  // Safely access doctor properties
+  const doctorName = nextUpcomingAppointment.doctor?.user?.name || "Doctor";
+  const doctorSpecialization = nextUpcomingAppointment.doctor?.specialization || "Specialist";
+  const doctorQualification = nextUpcomingAppointment.doctor?.qualification || "";
+  const doctorAvatar = nextUpcomingAppointment.doctor?.user?.avatar || "/default-avatar.png";
+  
+  // Safely access symptoms
+  const symptoms = nextUpcomingAppointment.symptoms || [];
+  
+  return (
+    <div className="mb-6 p-6 bg-primary border border-black rounded-lg shadow-lg flex flex-col md:flex-row gap-6 text-white">
+      <div className="md:w-2/3 space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-xl font-bold">Upcoming Appointment</h3>
+          <Badge className={`${getStatusStyle(nextUpcomingAppointment.status)} px-3 py-1`}>
+            {nextUpcomingAppointment.status === "active" ? "Active Now" : getTimeUntil()}
+          </Badge>
+        </div>
+        
+        <div className="flex items-center space-x-3">
+          <div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-white">
+            <Image 
+              src={doctorAvatar} 
+              alt={doctorName} 
+              fill
+              className="object-cover"
+            />
+          </div>
+          <div>
+            <p className="font-semibold text-lg">Dr. {doctorName}</p>
+            <p className="text-primary-foreground/80">{doctorSpecialization} • {doctorQualification}</p>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="flex items-center space-x-2">
+            <FaCalendarAlt />
+            <span>{formattedDate}</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <FaClock />
+            <span>{nextUpcomingAppointment.time}</span>
+          </div>
+          
+          {symptoms && symptoms.length > 0 && (
+            <div className="sm:col-span-2">
+              <p className="font-medium mb-1">Symptoms:</p>
+              <div className="flex flex-wrap gap-2">
+                {Array.isArray(symptoms) ? (
+                  symptoms.map((symptom, index) => (
+                    <span key={index} className="px-3 py-1 bg-white/20 rounded-full text-sm">
+                      {symptom}
+                    </span>
+                  ))
+                ) : (
+                  <span className="px-3 py-1 bg-white/20 rounded-full text-sm">
+                    {symptoms}
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
-      {
-        isOpen && (
-          <ConsultationModal
-            isOpen={isOpen}
-            toggleModal={toggleModal}
-            doctor={user}
-            appointment={nextUpcomingAppointment}
-            getAllAppointments={getAllAppointments}
-          />  )
-      }
+      
+      <div className="md:w-1/3 flex flex-col justify-center items-center space-y-4">
+        {nextUpcomingAppointment.status === "active" ? (
+          <Button 
+            onClick={joinVideoCall}
+            className="w-full bg-white text-primary hover:bg-white/90 transition shadow-md"
+          >
+            <BiVideo className="mr-2 h-5 w-5" />
+            Join Video Call
+          </Button>
+        ) : (
+          <>
+            <p className="font-medium text-center text-white/90">
+              Your appointment is confirmed
+            </p>
+            {nextUpcomingAppointment.day && (
+              <p className="text-white/80 text-center">
+                {nextUpcomingAppointment.day}
+              </p>
+            )}
+          </>
+        )}
+        
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button 
+              variant="outline" 
+              className="w-full bg-transparent border-white text-white hover:bg-white/10"
+            >
+              <MdCancel className="mr-2 h-5 w-5" />
+              Cancel Appointment
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Cancel Appointment</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to cancel your appointment with Dr. {doctorName} on {formattedDate}?
+                This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                Keep Appointment
+              </Button>
+              <Button variant="destructive" onClick={cancelAppointment}>
+                Yes, Cancel Appointment
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
-}
+};
 
 export default NextAppointment;

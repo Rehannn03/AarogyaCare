@@ -81,8 +81,14 @@ function Sidebar() {
     {
       name: "My Appointments",
       icon: <CiCalendarDate className="w-5 h-5" />,
+      link: "/dashboard/doctor/appointments",
+      allowed: ["doctor",],
+    },
+    {
+      name: "Booked Appointments",
+      icon: <CiCalendarDate className="w-5 h-5" />,
       link: "/dashboard/my-appointments",
-      allowed: ["doctor", "patient"],
+      allowed: ["patient"],
     },
     {
       name: "Profile",
