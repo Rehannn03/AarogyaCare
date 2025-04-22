@@ -100,7 +100,7 @@ const page = () => {
               const formattedDate = `${year}-${month}-${day}`;
               return {
                 title: `${
-                  user.role === "doctor" ? el.patient.name : el.doctor.user.name
+                  user.role === "doctor" ? patient.name : user.name
                 }`,
                 date: formattedDate,
               };
