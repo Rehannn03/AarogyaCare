@@ -22,4 +22,5 @@ router.post('/fillConsultation',verifyJWT,fillConsultation)
 router.get('/getSpecialistCount',verifyJWT,getSpecialistCount)
 router.patch('/activateAppointment',verifyJWT,activateAppointment)
 router.get('/earnings',verifyJWT,earnings)
+router.patch('/doctor/degree',verifyJWT,upload.single('degree'),updateDoctorDegree)
 export default router;

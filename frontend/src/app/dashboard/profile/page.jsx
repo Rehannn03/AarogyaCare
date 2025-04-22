@@ -99,49 +99,53 @@ const page = () => {
   const handleEditClick = async () => {
     if (isEditing) {
       try {
-        setIsSubmitting(true)
-
-        // Create FormData to handle file upload
-        const formData = new FormData()
-
-        // Add all the profile data to the FormData
-        formData.append("name", name)
-        formData.append("age", age)
-        formData.append("contact", contact)
-        formData.append("address", address)
-        formData.append("city", city)
-        formData.append("gender", gender)
-        formData.append("specialization", specialization)
-        formData.append("experience", experience)
-        formData.append("qualification", qualification)
-        formData.append("consultationFee", consultationFee)
-
-        // Add the degree file if a new one is selected
-        if (selectedDegree) {
-          formData.append("degree", selectedDegree)
+        const formDataToSend = {
+          name,
+          age,
+          contact,
+          address,
+          city,
+          gender,
+          avatar,
+          specialization,
+          experience,
+          qualification,
+          consultationFee,
         }
-
-        console.log("Submitting form data:", Object.fromEntries(formData))
-
-        // Send the update request with FormData
-        await apiClient.post("/doctors/updateInfo", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        })
-
+  
+        await apiClient.post("/doctors/updateInfo", formDataToSend)
+  
+        // If a new degree file is selected, upload it separately
+        if (degree instanceof File) {
+          const formData = new FormData()
+          formData.append("file", degree)
+          await apiClient.post("/doctors/degree", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          })
+        }
+  
         toast({
           title: "Profile updated.",
           description: "Your profile has been updated successfully.",
           variant: "success",
         })
-
-        // Refresh doctor data
-        const response = await apiClient("/doctors/getDoctor")
-        setData(response.data.data.doctor)
-
-        // Reset selected degree after successful update
-        setSelectedDegree(null)
+  
+        fetchAndSetUserStore((updatedUser) => {
+          setName(updatedUser.name || "")
+          setEmail(updatedUser.email || "")
+          setAge(updatedUser.profile.age || "")
+          setContact(updatedUser.profile.contact || "")
+          setAddress(updatedUser.profile.address || "")
+          setCity(updatedUser.profile.city || "")
+          setGender(updatedUser.profile.gender || "")
+          setAvatar(updatedUser.avatar || "")
+          setSpecialization(updatedUser.specialization || "")
+          setExperience(updatedUser.experience || 0)
+          setQualification(updatedUser.qualification || "")
+          setConsultationFee(updatedUser.consultationFee || 0)
+          setDegree(updatedUser.degree || "")
+        })
+  
         setIsEditing(false)
       } catch (error) {
         console.error("Error updating profile:", error)
@@ -157,6 +161,7 @@ const page = () => {
       setIsEditing(true)
     }
   }
+  
 
   useEffect(() => {
     if (!user) return

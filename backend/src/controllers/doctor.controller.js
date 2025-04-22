@@ -340,6 +340,34 @@ const getAllDoctors=asyncHandler(asyncHandler(async(_,res)=>{
     )
 }))
 
+const updateDoctorDegree = asyncHandler(async (req, res) => {
+    const degreePath = req.file?.path;
+  
+    if (!degreePath) {
+      throw new ApiError(400, "No degree file uploaded");
+    }
+  
+    const uploadedDegree = await uploadOnCloudinary(degreePath);
+  
+    const doctor = await Doctor.findByIdAndUpdate(
+      req.user._id,
+      { $set: { degree: uploadedDegree.secure_url } },
+      { new: true }
+    );
+  
+    if (!doctor) {
+      throw new ApiError(400, "Doctor degree not updated");
+    }
+  
+    return res.status(200).json(
+      new ApiResponse(200, {
+        message: "Doctor degree updated successfully",
+        doctor,
+      })
+    );
+  });
+  
+
 // Appointment time slot with doctor bussiness 
 // Doctor specialisty wise grouping 
 // Appointment status is live 
@@ -353,5 +381,6 @@ export {
     getSpecialistCount,
     activateAppointment,
     earnings,
-    getAllDoctors
+    getAllDoctors,
+    updateDoctorDegree
 }
