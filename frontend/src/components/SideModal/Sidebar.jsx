@@ -67,7 +67,7 @@ function Sidebar() {
     {
       name:"Patient Dashboard",
       icon:<IoStatsChart className="w-5 h-5" />,
-      link:"/dashboard",
+      link:"/dashboard/patient",
       allowed:["patient"],
     },
     {

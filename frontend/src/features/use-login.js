@@ -18,7 +18,7 @@ export const useLogin = () => {
     onSuccess: (user) => {
       update(user);
       toast({ title: "Logged in successfully." });
-      router.push(user.role === "patient" ? "/dashboard" : "/dashboard/doctor");
+      router.push(user.role === "patient" ? "/dashboard/patient" : "/dashboard/doctor");
     },
     onError: (err) => {
       toast({
