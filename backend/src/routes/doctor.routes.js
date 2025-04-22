@@ -8,9 +8,11 @@ import {
     getSpecialistCount,
     activateAppointment,
     earnings,
-    getAllDoctors
+    getAllDoctors,
+    updateDoctorDegree
 } from '../controllers/doctor.controller.js';
 import { verifyJWT } from '../middleware/auth.middleware.js';
+import {upload} from '../middleware/multer.middleware.js'
 const router = express.Router();
 
 router.post('/updateInfo',verifyJWT,updateInfo)

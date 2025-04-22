@@ -107,7 +107,7 @@ const Navbar = () => {
   }, [])
 
   return (
-    <nav className="h-[72px] bg-[white] flex items-center justify-between px-6 md:pl-8 border-b-2 border-[#84CC16] relative z-[50]">
+    <nav className="h-[72px] bg-[white] flex items-center justify-between px-6 md:pl-8 border-b-2 border-[#84CC16] relative z-[50] font-title">
       {/* Logo */}
       <div className="w-auto">
   <a href="/">
