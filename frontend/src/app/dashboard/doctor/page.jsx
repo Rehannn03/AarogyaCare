@@ -18,6 +18,7 @@ import { Separator } from "@/components/ui/seprator"
 
 // API client
 import apiClient from "@/api-client/apiClient"
+import Loader from "@/components/Loader"
 
 export default function DoctorDashboard() {
   const [timeRange, setTimeRange] = useState("week")
@@ -32,6 +33,8 @@ export default function DoctorDashboard() {
   })
   const [selectedAppointment, setSelectedAppointment] = useState(null)
   const [showConsultationForm, setShowConsultationForm] = useState(false)
+
+  
 
   // Metrics data
   const metrics = [
@@ -79,6 +82,8 @@ export default function DoctorDashboard() {
         if (doctorResponse.data.success) {
           setDoctor(doctorResponse.data.data.doctor)
         }
+        console.log(doctor);
+        
 
         // Fetch appointments
         const appointmentsResponse = await apiClient.get("/doctors/getAppointments")
@@ -145,10 +150,7 @@ export default function DoctorDashboard() {
   if (loading) {
     return (
       <div className="container mx-auto p-6 flex items-center justify-center h-screen">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-16 h-16 border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-          <p className="text-muted-foreground animate-pulse">Loading dashboard...</p>
-        </div>
+        <Loader/>
       </div>
     )
   }
@@ -190,7 +192,7 @@ export default function DoctorDashboard() {
                 <div className="flex-1">
                   <div className="flex items-center gap-4 mb-6">
                     <Avatar className="h-16 w-16 border-2 border-blue-100">
-                      <AvatarImage src={doctor?.userId.profile?.avatar || "/placeholder.svg?height=64&width=64"} />
+                      <AvatarImage src={doctor?.userId.avatar || "/placeholder.svg?height=64&width=64"} />
                       <AvatarFallback className="bg-blue-100 text-blue-800 text-lg">
                         {doctor?.userId.name?.charAt(0) || "D"}
                       </AvatarFallback>
