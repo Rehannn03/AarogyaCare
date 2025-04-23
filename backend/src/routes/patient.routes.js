@@ -4,6 +4,7 @@ import {
   viewAppointments,
   addReports,
   viewReports,
+  deleteReport
   viewConsultations,
   addMedicine,
   viewMedicine,
@@ -21,6 +22,7 @@ router.post("/scheduleAppointment", verifyJWT, scheduleAppointment);
 router.get("/viewAppointments", verifyJWT, viewAppointments);
 router.post("/addReports", verifyJWT, upload.single("report"), addReports);
 router.get("/viewReports", verifyJWT, viewReports);
+router.delete("/deleteReport/:reportId", verifyJWT, deleteReport);
 router.get("/viewConsultations", verifyJWT, viewConsultations);
 router.post("/addMedicine", verifyJWT, addMedicine);
 router.get("/viewMedicine", verifyJWT, viewMedicine);

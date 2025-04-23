@@ -108,7 +108,6 @@ const viewAppointments = asyncHandler(async (req, res) => {
 
 const addReports = asyncHandler(async (req, res) => {
   const { title, description, details } = req.body;
-  console.log(req.body);
   if (!req.file) {
     throw new ApiError(400, "No file uploaded");
   }
