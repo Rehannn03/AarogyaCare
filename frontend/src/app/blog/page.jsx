@@ -85,7 +85,7 @@ export default function HomePage() {
               </div>
               <div className="relative h-64 md:h-96 rounded-2xl overflow-hidden shadow-lg animate-slide-in">
                 <Image
-                  src="/placeholder.svg?height=600&width=800"
+                  src="https://res.cloudinary.com/dnmjiwqso/image/upload/v1745425542/iStock-1290139310.jpg_urghly.webp"
                   alt="Healthcare professionals"
                   fill
                   className="object-cover"

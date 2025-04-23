@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import apiClient from "@/api-client/apiClient";
 import Link from "next/link";
+import Loader from "@/components/Loader";
 
 const specializations = [
   "General physician",
@@ -40,7 +41,7 @@ const DoctorsPage = () => {
     fetchDoctors();
   }, []);
 
-  if (loading) return <div className="py-8 text-center">Loading...</div>;
+  if (loading) return <Loader/>;
 
   return (
     <div className="flex gap-6 p-4 max-w-7xl mx-auto">
