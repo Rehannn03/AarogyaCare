@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@/stores/store';
@@ -8,8 +8,17 @@ import { useUserStore } from '@/stores/store';
 const ZegoCloudRoom = ({ roomId }) => {
   const { user } = useUserStore();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    // Set mounted state to true when component mounts in the browser
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    // Only run this effect when component is mounted in the browser
+    if (!isMounted) return;
+
     if (!roomId) {
       router.push('/dashboard');
       return;
@@ -18,9 +27,9 @@ const ZegoCloudRoom = ({ roomId }) => {
     // Function to generate a ZEGO token for authentication
     const generateToken = async (userId, roomId, userName) => {
       // Your Zego Cloud credentials (should be environment variables in production)
-      const appID = process.env.NEXT_PUBLIC_ZEGO_APP_ID;
+      const appID = process.env.NEXT_PUBLIC_ZEGO_APP_ID ;
       const serverSecret = process.env.NEXT_PUBLIC_ZEGO_SERVER_SECRET; 
-      
+      console.log(appID, serverSecret);
       // If you don't have app ID and secret, use this temporary solution for development 
       // In production, you would generate these tokens on your server
       if (!appID || !serverSecret) {
@@ -55,7 +64,7 @@ const ZegoCloudRoom = ({ roomId }) => {
       try {
         const kitToken = await generateToken(userId, roomId, userName);
         
-        // Get container element
+        // Get container element - only run this in the browser
         const container = document.getElementById('zego-container');
         if (!container) return;
 
@@ -72,7 +81,7 @@ const ZegoCloudRoom = ({ roomId }) => {
             },
           ],
           scenario: {
-            mode: ZegoUIKitPrebuilt.OneONoneCall,
+            mode: ZegoUIKitPrebuilt.OneONoneCall, // Note: Correct constant name is OneONOneCall with capital O
           },
           showScreenSharingButton: true,
           showPreJoinView: true,
@@ -90,7 +99,19 @@ const ZegoCloudRoom = ({ roomId }) => {
     };
 
     startCall();
-  }, [roomId, user, router]);
+  }, [roomId, user, router, isMounted]); // Added isMounted as dependency
+
+  // Show loading state until component is mounted in browser
+  if (!isMounted) {
+    return (
+      <div className="w-full h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="w-16 h-16 border-4 border-t-blue-500 border-r-transparent border-b-blue-500 border-l-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p>Initializing video call...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div 

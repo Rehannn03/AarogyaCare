@@ -13,7 +13,8 @@ export default function ZegoRoom({ roomId, user }) {
     
     // Create a token (using the test token generation for simplicity)
     const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
-      1234567890, // App ID - replace with your actual App ID
+      parseInt(process.env.NEXT_PUBLIC_ZEGO_APP_ID), // App ID
+      process.env.NEXT_PUBLIC_ZEGO_SERVER_SECRET, // Server Secret
       roomId, 
       userId,
       userName,
@@ -39,7 +40,14 @@ export default function ZegoRoom({ roomId, user }) {
       layout: "Grid",
       showLayoutButton: true,
       onLeaveRoom: () => {
-        window.location.href = '/consultation';
+        // If the user is the doctor, redirect to the appointments page
+        if (user?.role === 'doctor') {
+          window.location.href = '/dashboard/doctor/appointments';
+        } else {
+          // If the user is a patient, redirect to the appointments page
+          window.location.href = '/dashboard/my-appointments';
+        }
+        window.location.href = '/';
       }
     });
     

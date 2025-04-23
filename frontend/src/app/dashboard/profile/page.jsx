@@ -2,36 +2,12 @@
 import React, { useEffect, useState } from "react"
 import apiClient from "@/api-client/apiClient"
 import { useUserStore } from "@/stores/store"
-import { FaCheckCircle, FaFilePdf } from "react-icons/fa"
+import { FaCheckCircle } from "react-icons/fa"
 import { MdEdit, MdPhotoCamera } from "react-icons/md"
 import { useToast } from "@/components/ui/use-toast"
+
+import { fetchAndSetUserStore } from "@/lib/fetchAndSetUserStore"
 import { useCurrent } from "@/features/getCurrent"
-// import { MdPhotoCamera } from "react-icons/md";
-// import { FaCheckCircle } from "react-icons/fa";
-// {
-//     "_id": "66afb3a35544ce36a1331daa",
-//     "userId": {
-//         "_id": "66a380a720df8be3620b8437",
-//         "name": "Rehan",
-//         "email": "rehan@gmail.com",
-//         "profile": {
-//             "age": 40,
-//             "contact": "9876543219",
-//             "address": "Powai",
-//             "gender": "M",
-//             "city": "Mumbai"
-//         },
-//         "avatar": "https://res.cloudinary.com/projectbackend/image/upload/v1722080184/mxu2ofc6hfors31aniwz.jpg"
-//     },
-//     "specialization": "Cardiologist",
-//     "experience": 5,
-//     "qualification": "M.B.B.S MD",
-//     "consultationFee": 300,
-//     "rating": 0,
-//     "reviews": 0,
-//     "verified": true,
-//     "degree": "https://res.cloudinary.com/projectbackend/image/upload/v1713959229/npgrhrclmnwfn2czr2ry.jpg"
-// }
 
 const page = () => {
   const { user } = useUserStore()
@@ -51,25 +27,19 @@ const page = () => {
   const [experience, setExperience] = useState(0)
   const [qualification, setQualification] = useState("")
   const [consultationFee, setConsultationFee] = useState(0)
-  const [degree, setDegree] = useState("")
-  const [degreeFileName, setDegreeFileName] = useState("")
-  const [selectedDegree, setSelectedDegree] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [newDegree, setNewDegree] = useState("")
+
+  const [degree, setDegree] = useState("") // For the current degree URL
+  const degreeFileInputRef = React.createRef() // Missing ref
 
   const [newProfilePicture, setNewProfilePicture] = useState(null)
   const [isEditing, setIsEditing] = useState(false)
   const fileInputRef = React.createRef()
-  const degreeFileInputRef = React.createRef()
   const { toast } = useToast()
 
   const { User, isPending } = useCurrent()
 
   console.log(User)
-
-  // useEffect(() => {
-  //   console.log(user);
-  // }
-  // ,[user]);
 
   const setData = (data) => {
     console.log("data", data)
@@ -88,80 +58,109 @@ const page = () => {
     setRating(data.rating)
     setReviews(data.reviews)
     setDegree(data.degree)
-
-    // Extract filename from degree URL if available
-    if (data.degree) {
-      const urlParts = data.degree.split("/")
-      setDegreeFileName(urlParts[urlParts.length - 1])
-    }
   }
 
   const handleEditClick = async () => {
     if (isEditing) {
       try {
-        const formDataToSend = {
-          name,
-          age,
-          contact,
-          address,
-          city,
-          gender,
-          avatar,
-          specialization,
-          experience,
-          qualification,
-          consultationFee,
+        // Validate required fields
+        if (!specialization || !qualification || !experience || !consultationFee) {
+          toast({
+            title: "Missing required fields",
+            description: "Please fill in all required doctor information fields.",
+            variant: "destructive",
+          })
+          return
         }
-  
+
+        // Create basic profile data
+        const formDataToSend = {
+          specialization: specialization || "",
+          experience: Number(experience) || 0,
+          qualification: qualification || "",
+          consultationFee: Number(consultationFee) || 0,
+        }
+
+        console.log("Sending data:", formDataToSend)
+        
+        // Update doctor information
         await apiClient.post("/doctors/updateInfo", formDataToSend)
-  
+
         // If a new degree file is selected, upload it separately
-        if (degree instanceof File) {
+        if (newDegree) {
           const formData = new FormData()
-          formData.append("file", degree)
-          await apiClient.post("/doctors/degree", formData, {
+          formData.append("degree", newDegree)
+          await apiClient.patch("/doctors/degree", formData, {
             headers: { "Content-Type": "multipart/form-data" },
           })
         }
-  
+
         toast({
           title: "Profile updated.",
           description: "Your profile has been updated successfully.",
           variant: "success",
         })
-  
-        fetchAndSetUserStore((updatedUser) => {
-          setName(updatedUser.name || "")
-          setEmail(updatedUser.email || "")
-          setAge(updatedUser.profile.age || "")
-          setContact(updatedUser.profile.contact || "")
-          setAddress(updatedUser.profile.address || "")
-          setCity(updatedUser.profile.city || "")
-          setGender(updatedUser.profile.gender || "")
-          setAvatar(updatedUser.avatar || "")
-          setSpecialization(updatedUser.specialization || "")
-          setExperience(updatedUser.experience || 0)
-          setQualification(updatedUser.qualification || "")
-          setConsultationFee(updatedUser.consultationFee || 0)
-          setDegree(updatedUser.degree || "")
-        })
-  
+
+        // Refresh doctor data
+        const response = await apiClient("/doctors/getDoctor")
+        setData(response.data.data.doctor)
+        setNewDegree(null) // Reset the file selection
         setIsEditing(false)
       } catch (error) {
         console.error("Error updating profile:", error)
         toast({
           title: "Update failed.",
-          description: "There was a problem updating your profile.",
+          description: error.response?.data?.message || "There was a problem updating your profile.",
           variant: "destructive",
         })
-      } finally {
-        setIsSubmitting(false)
       }
     } else {
       setIsEditing(true)
     }
   }
+
+  const handleDegreeChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setNewDegree(e.target.files[0])
+    }
+  }// already declared
+
+  const handleDegreeUpload = async () => {
+    if (!degreeFileInputRef.current?.files[0]) {
+      alert("Please select a degree file to upload.");
+      return;
+    }
   
+    const formData = new FormData();
+    // Use 'file' instead of 'degree' to match multer's expected field name
+    formData.append("degree", degreeFileInputRef.current.files[0]);
+  
+    try {
+      const response = await apiClient.patch("/doctors/degree", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      
+      if(response.status === 200) {
+        // Update the local state to show the new degree
+        setDegree(response.data.data.doctor.degree);
+        setNewDegree(null);
+        
+        toast({
+          title: "Degree Uploaded",
+          description: "Your degree file has been uploaded successfully.",
+          variant: "success",
+        });
+      }
+    } catch (error) {
+      console.error("Error uploading degree:", error);
+      toast({
+        title: "Upload Failed",
+        description: error.response?.data?.message || "Failed to upload degree.",
+        variant: "destructive",
+      });
+    }
+  };
+
 
   useEffect(() => {
     if (!user) return
@@ -176,48 +175,6 @@ const page = () => {
     }
     getDoctor()
   }, [user]) // Removed setData from the dependency array
-
-  const handleDegreeFileUpload = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      // Validate file type
-      const validTypes = ["application/pdf", "image/jpeg", "image/jpg", "image/png"]
-      if (!validTypes.includes(file.type)) {
-        toast({
-          title: "Invalid file type",
-          description: "Please upload a PDF, JPG, or PNG file.",
-          variant: "destructive",
-        })
-        return
-      }
-
-      // Validate file size (max 5MB)
-      const maxSize = 5 * 1024 * 1024 // 5MB in bytes
-      if (file.size > maxSize) {
-        toast({
-          title: "File too large",
-          description: "Please upload a file smaller than 5MB.",
-          variant: "destructive",
-        })
-        return
-      }
-
-      setSelectedDegree(file)
-      setDegreeFileName(file.name)
-
-      toast({
-        title: "File selected",
-        description: "Click 'Save Changes' to upload your degree certificate.",
-        variant: "info",
-      })
-    }
-  }
-
-  const openDegreePreview = () => {
-    if (degree) {
-      window.open(degree, "_blank")
-    }
-  }
 
   return (
     <div className="min-h-screen p-6 flex flex-col items-center">
@@ -244,7 +201,6 @@ const page = () => {
               ref={fileInputRef}
               className="hidden"
               accept="image/*"
-              // onChange={(e) => }
             />
             <button
               className="text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150 py-2 px-4 cursor-pointer"
@@ -253,6 +209,124 @@ const page = () => {
               <MdPhotoCamera className="h-5 w-5 inline" /> Choose Image
             </button>
           </div>
+          {/* Degree Upload Section */}
+          <div className="mt-8 w-full flex flex-col justify-center items-center px-4">
+            <label htmlFor="degree-upload" className="mb-2 text-base text-gray-700 font-medium">
+              Degree Certificate
+            </label>
+            <div
+              className={`w-full h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-4 transition-colors ${
+                isEditing
+                  ? degree
+                    ? "border-indigo-300 bg-indigo-50"
+                    : "border-gray-300 hover:border-indigo-300 hover:bg-indigo-50"
+                  : "border-gray-200 bg-gray-50 cursor-not-allowed"
+              }`}
+              onDragOver={(e) => {
+                if (isEditing) {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  e.currentTarget.classList.add("border-indigo-500", "bg-indigo-50")
+                }
+              }}
+              onDragLeave={(e) => {
+                if (isEditing) {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  e.currentTarget.classList.remove("border-indigo-500", "bg-indigo-50")
+                }
+              }}
+              onDrop={(e) => {
+                if (isEditing) {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  e.currentTarget.classList.remove("border-indigo-500", "bg-indigo-50")
+                  if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    setNewDegree(e.dataTransfer.files[0])
+                  }
+                }
+              }}
+              onClick={() => {
+                if (isEditing) {
+                  degreeFileInputRef.current.click()
+                }
+              }}
+            >
+              {newDegree ? (
+                <div className="flex flex-col items-center gap-2">
+                  <div className="text-indigo-600 font-medium">{newDegree.name}</div>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setNewDegree(null)
+                    }}
+                    className="text-xs text-red-500 hover:text-red-700"
+                    disabled={!isEditing}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : degree ? (
+                <div className="flex flex-col items-center gap-2">
+                  <a
+                    href={degree}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-600 hover:underline text-center"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    View Current Certificate
+                  </a>
+                  {isEditing && <div className="text-sm text-gray-500">Drag & drop to replace or click to browse</div>}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-2">
+                  <div className="text-gray-500">
+                    {isEditing ? "Drag & drop your degree certificate here" : "No certificate uploaded"}
+                  </div>
+                  {isEditing && <div className="text-sm text-gray-500">or click to browse</div>}
+                </div>
+              )}
+              <input
+                type="file"
+                id="degree-upload"
+                ref={degreeFileInputRef}
+                className="hidden"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={handleDegreeChange}
+                disabled={!isEditing}
+              />
+            </div>
+
+            {/* Add prominent upload button */}
+            {isEditing && (
+              <button
+                type="button"
+                className="mt-4 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150 py-2 px-4 cursor-pointer w-full max-w-[250px]"
+                onClick={() => degreeFileInputRef.current.click()}
+              >
+                {newDegree ? "Change Selected File" : "Upload Degree Certificate"}
+              </button>
+            )}
+
+            {/* Show selected file name */}
+            {isEditing && newDegree && (
+              <div className="mt-2 text-sm text-gray-600">Selected file: {newDegree.name}</div>
+            )}
+            {isEditing && newDegree && (
+  <>
+    <button
+      type="button"
+      onClick={handleDegreeUpload}
+      className="mt-2 text-white font-medium bg-green-600 hover:bg-green-500 active:bg-green-700 rounded-lg duration-150 py-2 px-4 cursor-pointer w-full max-w-[250px]"
+    >
+      Upload Now
+    </button>
+  </>
+)}
+
+          </div>
         </div>
 
         {/* Profile Details Section */}
@@ -260,24 +334,11 @@ const page = () => {
           <div className="flex justify-between px-4">
             <h1 className="text-3xl font-bold">Profile Details</h1>
             <button
-              className="w-40 px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150 flex items-center justify-center"
+              className="w-40 px-4 py-2 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150"
               onClick={handleEditClick}
-              disabled={isSubmitting}
             >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                  Saving...
-                </>
-              ) : isEditing ? (
-                <>
-                  <FaCheckCircle className="h-5 w-5 mr-2" /> Save Changes
-                </>
-              ) : (
-                <>
-                  <MdEdit className="h-5 w-5 mr-2" /> Edit
-                </>
-              )}
+              {isEditing ? <FaCheckCircle className="h-5 w-5 inline" /> : <MdEdit className="h-5 w-5 inline" />}{" "}
+              {isEditing ? "Save Changes" : "Edit"}
             </button>
           </div>
           <form className="p-4 space-y-5">
@@ -388,85 +449,11 @@ const page = () => {
                 className="w-full mt-2 px-3 py-2 text-gray-500 bg-transparent outline-none border focus:border-indigo-600 shadow-sm rounded-lg"
               />
             </div>
-
-            {/* Degree Upload Section */}
-            <div className="mt-8 space-y-4 border-t pt-6">
-              <div className="flex items-center justify-between">
-                <label className="font-medium text-lg">Degree Certificate</label>
-                {degree && (
-                  <button
-                    type="button"
-                    onClick={openDegreePreview}
-                    className="px-3 py-1 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm"
-                  >
-                    View Current
-                  </button>
-                )}
-              </div>
-
-              <div
-                className={`p-4 border-2 border-dashed rounded-lg ${selectedDegree || degree ? "border-green-300 bg-green-50" : "border-indigo-300 bg-indigo-50"} flex items-center justify-between`}
-              >
-                <div className="flex items-center">
-                  <FaFilePdf
-                    className={`h-8 w-8 ${selectedDegree || degree ? "text-green-500" : "text-indigo-400"} mr-3`}
-                  />
-                  <div>
-                    <p className="font-medium">
-                      {selectedDegree ? selectedDegree.name : degree ? degreeFileName : "No file selected"}
-                    </p>
-                    <p className="text-xs text-gray-500">Upload your degree certificate (PDF, JPG, PNG, max 5MB)</p>
-                  </div>
-                </div>
-
-                <input
-                  type="file"
-                  id="degree-upload"
-                  ref={degreeFileInputRef}
-                  className="hidden"
-                  accept=".pdf,.jpg,.jpeg,.png"
-                  onChange={handleDegreeFileUpload}
-                  disabled={!isEditing}
-                />
-
-                {isEditing && (
-                  <button
-                    type="button"
-                    onClick={() => degreeFileInputRef.current.click()}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors flex items-center"
-                    disabled={isSubmitting}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 mr-2"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
-                      />
-                    </svg>
-                    Browse
-                  </button>
-                )}
-              </div>
-
-              {selectedDegree && isEditing && (
-                <div className="text-sm text-green-600 flex items-center">
-                  <FaCheckCircle className="mr-2" />
-                  New degree file selected. Click "Save Changes" to update your profile with this degree.
-                </div>
-              )}
-            </div>
           </form>
         </div>
       </div>
     </div>
   )
 }
-
 export default page
+

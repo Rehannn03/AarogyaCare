@@ -340,29 +340,43 @@ const getAllDoctors=asyncHandler(asyncHandler(async(_,res)=>{
     )
 }))
 
-const updateDoctorDegree = asyncHandler(async (req, res) => {
-    const degreePath = req.file?.path;
-  
-    if (!degreePath) {
+  const updateDoctorDegree = asyncHandler(async (req, res) => {
+    // Check if file exists
+    if (!req.file) {
       throw new ApiError(400, "No degree file uploaded");
     }
-  
-    const uploadedDegree = await uploadOnCloudinary(degreePath);
-  
-    const doctor = await Doctor.findByIdAndUpdate(
-      req.user._id,
+    
+    console.log("File received:", req.file);
+    
+    // Get the doctor by userId (not by doctor._id)
+    const doctor = await Doctor.findOne({ userId: req.user._id });
+    
+    if (!doctor) {
+      throw new ApiError(404, "Doctor profile not found");
+    }
+    
+    // Upload to Cloudinary
+    const uploadedDegree = await uploadOnCloudinary(req.file.path);
+    
+    if (!uploadedDegree || !uploadedDegree.secure_url) {
+      throw new ApiError(500, "Failed to upload to cloud storage");
+    }
+    
+    // Update the doctor record
+    const updatedDoctor = await Doctor.findByIdAndUpdate(
+      doctor._id, // Use the doctor._id, not the user._id
       { $set: { degree: uploadedDegree.secure_url } },
       { new: true }
     );
-  
-    if (!doctor) {
+    
+    if (!updatedDoctor) {
       throw new ApiError(400, "Doctor degree not updated");
     }
-  
+    
     return res.status(200).json(
       new ApiResponse(200, {
         message: "Doctor degree updated successfully",
-        doctor,
+        doctor: updatedDoctor,
       })
     );
   });
