@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import apiClient from '@/api-client/apiClient';
+import apiClient from "@/api-client/apiClient";
 
 interface Doctor {
   _id: string;
-  userId: {
+  userId?: {
     name: string;
     email?: string;
     avatar?: string;
@@ -29,34 +29,27 @@ const doctorImages = [
   "/placeholder.svg?height=300&width=300&text=Doctor+8",
 ];
 
-async function getDoctors(speciality: string) {
-  const res = await apiClient(`doctors/getAllDoctors`).catch((err) => {
-    console.error("Error fetching data:", err);
-    return null;
-  });
+async function getDoctors(speciality: string): Promise<Doctor[]> {
+  try {
+    const res = await apiClient("doctors/getAllDoctors");
 
-  if (!res || !res.data || !res.data.data) {
+    const doctors = res?.data?.data?.doctors || [];
+
+    const normalizedSpeciality = decodeURIComponent(speciality.trim()).toLowerCase();
+
+    console.log("Normalized speciality:", normalizedSpeciality);
+    
+    return doctors.filter((doctor: any) => {
+      const spec = (doctor.specialization || "").trim().toLowerCase();
+      console.log("Doctor specialization:", spec, "Normalized speciality:", normalizedSpeciality);
+      
+      return spec === normalizedSpeciality && doctor.userId?.name;
+    });
+  } catch (err) {
+    console.error("Error fetching doctors:", err);
     return [];
   }
-
-  const { doctors } = res.data.data;
-  if (!Array.isArray(doctors)) {
-    console.error("Expected an array but got:", doctors);
-    return [];
-  }
-
-  // Normalize the target speciality
-  const normalizedSpeciality = speciality.trim().toLowerCase();
-
-  // Use regex match or string normalization for filtering
-  const filtered = doctors.filter((doctor: any) => {
-    const doctorSpec = (doctor.specialization || "").trim().toLowerCase();
-    return doctorSpec === normalizedSpeciality;
-  });
-
-  return filtered;
 }
-
 
 interface ProjectIsPageProps {
   params: { speciality: string };
@@ -69,6 +62,8 @@ const DoctorsSpecialityPage = ({ params }: ProjectIsPageProps) => {
 
   useEffect(() => {
     if (speciality) {
+
+      
       getDoctors(speciality).then((data) => {
         setDoctors(data);
         setLoading(false);
@@ -76,7 +71,7 @@ const DoctorsSpecialityPage = ({ params }: ProjectIsPageProps) => {
     }
   }, [speciality]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="text-center py-20">Loading...</div>;
   if (!speciality) return notFound();
 
   const specializations = [
@@ -86,17 +81,23 @@ const DoctorsSpecialityPage = ({ params }: ProjectIsPageProps) => {
     "Cardiologist",
     "Neurologists",
     "Gastroenterologist",
+    "Orthopedic Surgical"
   ];
 
   return (
-    <div className="container mx-auto py-8 px-4 flex">
-      <aside className="w-1/4 pr-6">
-        <h2 className="text-lg font-medium mb-4">Browse by Specialization</h2>
+    <div className="container mx-auto py-8 px-4 flex gap-6">
+      {/* Sidebar */}
+      <aside className="w-1/4">
+        <h2 className="text-lg font-semibold mb-4">Browse by Specialization</h2>
         <div className="space-y-2">
           {specializations.map((spec) => (
             <Link key={spec} href={`/doctors/${spec}`}>
               <button
-                className={`block w-full text-left p-3 rounded-lg border ${spec === speciality ? 'bg-blue-100 border-blue-600' : 'border-gray-300'}`}
+                className={`block w-full text-left px-4 py-2 rounded-lg border ${
+                  spec.toLowerCase() === speciality.toLowerCase()
+                    ? "bg-blue-100 border-blue-600"
+                    : "border-gray-300"
+                }`}
               >
                 {spec}
               </button>
@@ -104,39 +105,47 @@ const DoctorsSpecialityPage = ({ params }: ProjectIsPageProps) => {
           ))}
         </div>
       </aside>
-      <div className="w-3/4">
-        <h1 className="text-xl text-blue-600 font-medium mb-8">
-          Doctors specializing in {speciality}
+
+      {/* Main content */}
+      <main className="w-3/4">
+        <h1 className="text-2xl font-bold text-blue-600 mb-6">
+          Doctors specializing in {decodeURIComponent(speciality)}
         </h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {doctors.length > 0 ? (
-            doctors.map((doctor, index) => (
-              <div key={doctor._id} className="bg-white shadow-md rounded-lg overflow-hidden">
-                <div className="aspect-square relative">
+
+        {doctors.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {doctors.map((doctor, index) => (
+              <div
+                key={doctor._id}
+                className="bg-white shadow-md rounded-lg overflow-hidden"
+              >
+                <div className="relative aspect-square">
                   <Image
-                    src={doctorImages[index % doctorImages.length] || "/placeholder.svg"}
-                    alt={doctor.userId.name}
+                    src={doctor.userId?.avatar || doctorImages[index % doctorImages.length]}
+                    alt={`Dr. ${doctor.userId?.name || "Doctor"}`}
                     fill
                     className="object-cover"
                   />
                 </div>
                 <div className="p-4">
-                  <div className="flex items-center mb-2">
+                  <div className="flex items-center mb-1">
                     <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-                    <span className="text-green-600 text-sm">Available</span>
+                    <span className="text-sm text-green-600">Available</span>
                   </div>
-                  <h3 className="font-medium text-lg">Dr. {doctor.userId.name}</h3>
-                  <p className="text-gray-600">{doctor.specialization}</p>
+                  <h3 className="font-medium text-lg">
+                    Dr. {doctor.userId?.name || "Unknown"}
+                  </h3>
+                  <p className="text-gray-600 text-sm">{doctor.specialization}</p>
                 </div>
               </div>
-            ))
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-500">No doctors found for this speciality</p>
-            </div>
-          )}
-        </div>
-      </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            No doctors found for this specialization.
+          </div>
+        )}
+      </main>
     </div>
   );
 };
