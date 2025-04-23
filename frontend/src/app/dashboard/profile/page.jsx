@@ -1,11 +1,10 @@
 "use client"
-import React, { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import apiClient from "@/api-client/apiClient"
 import { useUserStore } from "@/stores/store"
 import { FaCheckCircle } from "react-icons/fa"
 import { MdEdit, MdPhotoCamera } from "react-icons/md"
 import { useToast } from "@/components/ui/use-toast"
-
 import { fetchAndSetUserStore } from "@/lib/fetchAndSetUserStore"
 import { useCurrent } from "@/features/getCurrent"
 
@@ -30,12 +29,17 @@ const page = () => {
   const [newDegree, setNewDegree] = useState("")
 
   const [degree, setDegree] = useState("") // For the current degree URL
-  const degreeFileInputRef = React.createRef() // Missing ref
+  const degreeFileInputRef = useRef(null) // Changed to useRef
 
-  const [newProfilePicture, setNewProfilePicture] = useState(null)
-  const [isEditing, setIsEditing] = useState(false)
-  const fileInputRef = React.createRef()
+  // Profile picture states
+  const [selectedImg, setSelectedImg] = useState("")
+  const [preview, setPreview] = useState(false)
+  const fileInputRef = useRef(null) // Changed to useRef
   const { toast } = useToast()
+
+  // Degree states
+  const [selectedDegree, setSelectedDegree] = useState("")
+  const [previewDegree, setPreviewDegree] = useState(false)
 
   const { User, isPending } = useCurrent()
 
@@ -82,7 +86,7 @@ const page = () => {
         }
 
         console.log("Sending data:", formDataToSend)
-        
+
         // Update doctor information
         await apiClient.post("/doctors/updateInfo", formDataToSend)
 
@@ -119,48 +123,118 @@ const page = () => {
     }
   }
 
-  const handleDegreeChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setNewDegree(e.target.files[0])
+  // Profile picture functions
+  const triggerFileInput = () => {
+    setPreview(true)
+    fileInputRef.current.click()
+  }
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0]
+    console.log(file)
+
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setSelectedImg(reader.result)
     }
-  }// already declared
+    reader.readAsDataURL(file)
+  }
+
+  const onConfirm = async () => {
+    if (!fileInputRef.current?.files[0]) {
+      alert("Please select an image first.")
+      return
+    }
+
+    const formData = new FormData()
+    formData.append("avatar", fileInputRef.current.files[0])
+
+    try {
+      const response = await apiClient.patch("/users/profile/pfp", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+
+      const updatedAvatar = response.data?.data?.user?.avatar
+
+      setAvatar(updatedAvatar)
+      fetchAndSetUserStore((updatedUser) => {
+        setAvatar(updatedUser.avatar)
+      })
+
+      toast({
+        title: "Profile Picture Updated",
+        description: "Your profile picture has been updated successfully.",
+        variant: "success",
+      })
+
+      setPreview(false)
+      setSelectedImg("")
+    } catch (error) {
+      console.error("Error updating profile picture:", error)
+      toast({
+        title: "Update Failed",
+        description: "Failed to update profile picture.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  // Degree functions
+  const triggerDegreeFileInput = () => {
+    setPreviewDegree(true)
+    degreeFileInputRef.current.click()
+  }
+
+  const handleDegreeChange = (e) => {
+    const file = e.target.files[0]
+    console.log(file)
+
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setSelectedDegree(reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
   const handleDegreeUpload = async () => {
     if (!degreeFileInputRef.current?.files[0]) {
-      alert("Please select a degree file to upload.");
-      return;
+      alert("Please select a degree file first.")
+      return
     }
-  
-    const formData = new FormData();
-    // Use 'file' instead of 'degree' to match multer's expected field name
-    formData.append("degree", degreeFileInputRef.current.files[0]);
-  
+
+    const formData = new FormData()
+    formData.append("degree", degreeFileInputRef.current.files[0])
+
     try {
       const response = await apiClient.patch("/doctors/degree", formData, {
         headers: { "Content-Type": "multipart/form-data" },
-      });
-      
-      if(response.status === 200) {
-        // Update the local state to show the new degree
-        setDegree(response.data.data.doctor.degree);
-        setNewDegree(null);
-        
-        toast({
-          title: "Degree Uploaded",
-          description: "Your degree file has been uploaded successfully.",
-          variant: "success",
-        });
-      }
-    } catch (error) {
-      console.error("Error uploading degree:", error);
-      toast({
-        title: "Upload Failed",
-        description: error.response?.data?.message || "Failed to upload degree.",
-        variant: "destructive",
-      });
-    }
-  };
+      })
 
+      const updatedDegree = response.data?.data?.doctor?.degree
+
+      setDegree(updatedDegree)
+
+      toast({
+        title: "Degree Certificate Updated",
+        description: "Your degree certificate has been updated successfully.",
+        variant: "success",
+      })
+
+      setPreviewDegree(false)
+      setSelectedDegree("")
+    } catch (error) {
+      console.error("Error updating degree certificate:", error)
+      toast({
+        title: "Update Failed",
+        description: "Failed to update degree certificate.",
+        variant: "destructive",
+      })
+    }
+  }
+
+  const [isEditing, setIsEditing] = useState(false)
 
   useEffect(() => {
     if (!user) return
@@ -183,7 +257,7 @@ const page = () => {
         <div className="flex flex-col items-center w-full lg:w-1/3">
           <div className="h-72 w-72 p-2 flex justify-center items-center overflow-hidden rounded-full shadow-md bg-white border">
             <img
-              src={newProfilePicture || avatar}
+              src={selectedImg || avatar}
               alt="Profile"
               className="object-cover w-full h-full bg-white rounded-full"
             />
@@ -201,131 +275,57 @@ const page = () => {
               ref={fileInputRef}
               className="hidden"
               accept="image/*"
+              onChange={handleFileUpload}
             />
             <button
               className="text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150 py-2 px-4 cursor-pointer"
-              onClick={() => fileInputRef.current.click()}
+              onClick={triggerFileInput}
             >
               <MdPhotoCamera className="h-5 w-5 inline" /> Choose Image
             </button>
+            {selectedImg && preview && (
+              <button
+                className="text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150 py-2 px-4 cursor-pointer mt-3"
+                onClick={onConfirm}
+              >
+                <FaCheckCircle className="h-5 w-5 inline mr-1" /> Confirm
+              </button>
+            )}
           </div>
           {/* Degree Upload Section */}
           <div className="mt-8 w-full flex flex-col justify-center items-center px-4">
             <label htmlFor="degree-upload" className="mb-2 text-base text-gray-700 font-medium">
               Degree Certificate
             </label>
-            <div
-              className={`w-full h-32 border-2 border-dashed rounded-lg flex flex-col items-center justify-center p-4 transition-colors ${
-                isEditing
-                  ? degree
-                    ? "border-indigo-300 bg-indigo-50"
-                    : "border-gray-300 hover:border-indigo-300 hover:bg-indigo-50"
-                  : "border-gray-200 bg-gray-50 cursor-not-allowed"
-              }`}
-              onDragOver={(e) => {
-                if (isEditing) {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  e.currentTarget.classList.add("border-indigo-500", "bg-indigo-50")
-                }
-              }}
-              onDragLeave={(e) => {
-                if (isEditing) {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  e.currentTarget.classList.remove("border-indigo-500", "bg-indigo-50")
-                }
-              }}
-              onDrop={(e) => {
-                if (isEditing) {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  e.currentTarget.classList.remove("border-indigo-500", "bg-indigo-50")
-                  if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    setNewDegree(e.dataTransfer.files[0])
-                  }
-                }
-              }}
-              onClick={() => {
-                if (isEditing) {
-                  degreeFileInputRef.current.click()
-                }
-              }}
+            <input
+              type="file"
+              id="degree-upload"
+              ref={degreeFileInputRef}
+              className="hidden"
+              accept=".pdf,.jpg,.jpeg,.png"
+              onChange={handleDegreeChange}
+            />
+            <button
+              className="text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150 py-2 px-4 cursor-pointer"
+              onClick={triggerDegreeFileInput}
             >
-              {newDegree ? (
-                <div className="flex flex-col items-center gap-2">
-                  <div className="text-indigo-600 font-medium">{newDegree.name}</div>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      setNewDegree(null)
-                    }}
-                    className="text-xs text-red-500 hover:text-red-700"
-                    disabled={!isEditing}
-                  >
-                    Remove
-                  </button>
-                </div>
-              ) : degree ? (
-                <div className="flex flex-col items-center gap-2">
-                  <a
-                    href={degree}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-indigo-600 hover:underline text-center"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    View Current Certificate
-                  </a>
-                  {isEditing && <div className="text-sm text-gray-500">Drag & drop to replace or click to browse</div>}
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-2">
-                  <div className="text-gray-500">
-                    {isEditing ? "Drag & drop your degree certificate here" : "No certificate uploaded"}
-                  </div>
-                  {isEditing && <div className="text-sm text-gray-500">or click to browse</div>}
-                </div>
-              )}
-              <input
-                type="file"
-                id="degree-upload"
-                ref={degreeFileInputRef}
-                className="hidden"
-                accept=".pdf,.jpg,.jpeg,.png"
-                onChange={handleDegreeChange}
-                disabled={!isEditing}
-              />
-            </div>
-
-            {/* Add prominent upload button */}
-            {isEditing && (
+              <MdPhotoCamera className="h-5 w-5 inline" /> Choose Certificate
+            </button>
+            {selectedDegree && previewDegree && (
               <button
-                type="button"
-                className="mt-4 text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150 py-2 px-4 cursor-pointer w-full max-w-[250px]"
-                onClick={() => degreeFileInputRef.current.click()}
+                className="text-white font-medium bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-600 rounded-lg duration-150 py-2 px-4 cursor-pointer mt-3"
+                onClick={handleDegreeUpload}
               >
-                {newDegree ? "Change Selected File" : "Upload Degree Certificate"}
+                <FaCheckCircle className="h-5 w-5 inline mr-1" /> Confirm
               </button>
             )}
-
-            {/* Show selected file name */}
-            {isEditing && newDegree && (
-              <div className="mt-2 text-sm text-gray-600">Selected file: {newDegree.name}</div>
+            {degree && (
+              <div className="mt-4">
+                <a href={degree} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">
+                  View Current Certificate
+                </a>
+              </div>
             )}
-            {isEditing && newDegree && (
-  <>
-    <button
-      type="button"
-      onClick={handleDegreeUpload}
-      className="mt-2 text-white font-medium bg-green-600 hover:bg-green-500 active:bg-green-700 rounded-lg duration-150 py-2 px-4 cursor-pointer w-full max-w-[250px]"
-    >
-      Upload Now
-    </button>
-  </>
-)}
-
           </div>
         </div>
 
@@ -456,4 +456,3 @@ const page = () => {
   )
 }
 export default page
-
