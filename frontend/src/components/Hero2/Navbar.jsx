@@ -59,6 +59,11 @@ const Navbar = () => {
     { key: "contact", path: "/contact" },
     { key: "blog", path: "/blog" },
   ];
+  const languages = [
+    { code: "en", label: "English" },
+    { code: "mr", label: "मराठी" },
+    { code: "tm", label: "தமிழ்" },
+  ];
 
   const handleDropdownOpen = () => {
     if (timeoutRef.current) {
@@ -107,7 +112,7 @@ const Navbar = () => {
   }, [])
 
   return (
-    <nav className="h-[72px] bg-[white] flex items-center justify-between px-6 md:pl-8 border-b-2 border-[#84CC16] relative z-[50]">
+    <nav className="h-[72px] bg-[white] flex items-center justify-between px-6 md:pl-8 border-b-2 border-[#84CC16] relative z-[50] font-title">
       {/* Logo */}
       <div className="w-auto">
   <a href="/">
@@ -260,15 +265,15 @@ const Navbar = () => {
           </button>
           {isLanguageDropdownOpen && (
             <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1 z-10">
-              {["en", "mr", "tm"].map((language) => (
-                <button
-                  key={language}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  onClick={() => changeLanguage(language)}
-                >
-                   {language === "en" ? "English" : language === "mr" ? "मराठी" : "தமிழ்"}
-                </button>
-              ))}
+             {languages.map(({ code, label }) => (
+              <button
+                key={code}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                onClick={() => changeLanguage(code)}
+              >
+                {label}
+              </button>
+            ))}
             </div>
           )}
         </div>

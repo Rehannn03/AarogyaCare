@@ -5,6 +5,7 @@ import Providers from "@/features/query-provider";
 import {NextIntlClientProvider} from 'next-intl';
 import {getLocale, getMessages} from 'next-intl/server';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import Footer from "@/components/blog/footer";
 
 export default async function RootLayout({ children }) {
   const locale = await getLocale();
