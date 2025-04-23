@@ -19,6 +19,7 @@ import { X, MessageCircle, Send, Loader2, ArrowDownCircleIcon } from "lucide-rea
 
 import { motion, AnimatePresence } from "framer-motion"
 import Loader from "@/components/Loader"
+import Footer from "@/components/blog/footer"
 
 
 
@@ -239,8 +240,9 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
-
+      <Footer/>
       </>
+      
     )}
       {/* Other components and content */}
     </>
