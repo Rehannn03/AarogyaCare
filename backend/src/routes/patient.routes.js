@@ -4,7 +4,7 @@ import {
   viewAppointments,
   addReports,
   viewReports,
-  deleteReport
+  deleteReport,
   viewConsultations,
   addMedicine,
   viewMedicine,
