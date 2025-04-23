@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scrollarea"
 
-import { X, MessageCircle, Send, Loader2, ArrowDownCircleIcon } from "lucide-react"
+import { X, MessageCircle, Send, Loader2, ArrowDownCircleIcon, Phone } from "lucide-react"
 
 import { motion, AnimatePresence } from "framer-motion"
 import Loader from "@/components/Loader"
@@ -81,6 +81,7 @@ function useChat() {
 export default function Home() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [showChatIcon, setShowChatIcon] = useState(false)
+  const [showPhonePopup, setShowPhonePopup] = useState(false); // Add this state
   const chatIconRef = useRef(null)
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, stop, reload, error } = useChat()
@@ -128,6 +129,29 @@ export default function Home() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+
+  // Replace your current phone popup useEffect with this version
+  useEffect(() => {
+    // Show popup after a short delay when page loads
+    const showTimeout = setTimeout(() => {
+      setShowPhonePopup(true);
+    }, 1000);
+    
+    // Add scroll listener to hide popup on ANY scroll
+    const handleScroll = () => {
+      if (showPhonePopup) {
+        setShowPhonePopup(false);
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      clearTimeout(showTimeout);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []); // Remove showPhonePopup from dependencies
+
   return (
     
     <>
@@ -141,6 +165,52 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <HeaderNav />
+      
+      {/* AI Agent Phone Numbers Popup */}
+      <AnimatePresence>
+        {showPhonePopup && (
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ duration: 0.3 }}
+            className="fixed top-20 inset-x-0 z-50 flex justify-center"
+          >
+            <div className="bg-gradient-to-r from-[#84CC16] to-green-500 text-black font-bold text-lg px-6 py-4 rounded-lg shadow-xl max-w-md mx-4">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-bold text-lg flex items-center">
+                  <Phone className="mr-2 h-5 w-5" /> 
+                  Call Our AI Health Assistants
+                </h3>
+                <button 
+                  onClick={() => setShowPhonePopup(false)} 
+                  className="text-white hover:text-blue-100"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <p className="mb-3 text-sm">
+                Get instant remedies and health advice from our AI-powered phone assistants:
+              </p>
+              <div className="space-y-2 font-medium">
+                <div className="bg-white/20 rounded p-2 flex items-center justify-between">
+                  <span>ArogyaCare AI Assistant:</span>
+                  <a href="tel:+15076056885" className="bg-white text-blue-700 px-3 py-1 rounded hover:bg-blue-50 transition-colors">
+                    +1 507 605 6885
+                  </a>
+                </div>
+                <div className="bg-white/20 rounded p-2 flex items-center justify-between">
+                  <span>Health Remedy AI:</span>
+                  <a href="tel:+19842662950" className="bg-white text-blue-700 px-3 py-1 rounded hover:bg-blue-50 transition-colors">
+                    +1 (984) 266-2950
+                  </a>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+      
       <Hero />
       <Speciality />
       <Statistics />
