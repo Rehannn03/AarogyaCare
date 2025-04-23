@@ -7,6 +7,7 @@ import { useUserStore } from '@/stores/store';
 import { fetchAndSetUserStore } from '@/lib/fetchAndSetUserStore';
 import Image from 'next/image';
 import loader from '/public/loader.svg';
+import ZegoRoom from '@/components/VideoCall/ZegoRoom';
 
 const RoomPage = () => {
   const { id } = useParams();
@@ -37,7 +38,7 @@ const RoomPage = () => {
     );
   }
 
-  return <ZegoCloudRoom roomId={id} />;
+  return <ZegoRoom roomId={id} user={user} />;
 };
 
 export default RoomPage;
