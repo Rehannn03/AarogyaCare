@@ -18,7 +18,16 @@ export const useLogin = () => {
     onSuccess: (user) => {
       update(user);
       toast({ title: "Logged in successfully." });
-      router.push(user.role === "patient" ? "/dashboard/patient" : "/dashboard/doctor");
+      if (user.role === "admin") {
+        router.push("/dashboard/admin");
+      } else if (user.role === "patient") {
+        router.push("/dashboard/patient");
+      } else if (user.role === "doctor") {
+        router.push("/dashboard/doctor");
+      } else {
+        // Default fallback
+        router.push("/dashboard");
+      }
     },
     onError: (err) => {
       toast({

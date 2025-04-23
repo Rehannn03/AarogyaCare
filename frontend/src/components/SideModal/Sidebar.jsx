@@ -61,7 +61,7 @@ function Sidebar() {
     {
       name: "Dashboard",
       icon: <IoStatsChart className="w-5 h-5" />,
-      link: "/dashboard",
+      link: "/dashboard/admin",
       allowed: ["admin"],
     },
     {
