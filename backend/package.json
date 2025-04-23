@@ -10,6 +10,7 @@
   "author": "Rehan Shah and Mubashir Tanvar",
   "license": "ISC",
   "dependencies": {
+    "@zegocloud/zego-uikit-prebuilt": "^2.14.3-beta",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
