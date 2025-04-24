@@ -109,7 +109,7 @@ const AdminDashboard = () => {
       description: "Manage upcoming appointments",
       icon: <FaCalendarCheck className="h-10 w-10 text-green-500" />,
       bgClass: "bg-green-50 border-green-200",
-      link: "/dashboard/appointments"
+      link: "/dashboard/all-appointments"
     },
     {
       title: "Analytics",
