@@ -358,7 +358,7 @@ const reActivateMedicine = asyncHandler(async (req, res) => {
   const { medicineId } = req.params;
 
   const medicine = await Medicine.findByIdAndUpdate(medicineId, {
-    isActive: true,
+    active: true,
   });
 
   if (!medicine) {
