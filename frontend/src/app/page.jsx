@@ -50,19 +50,19 @@ function useChat() {
         body: JSON.stringify({ question: newMessage.content }),
       });
 
-      if (!response.ok) {
+      if (!response) {
         throw new Error(`Failed to get a response from the server: ${response.statusText}`);
       }
 
       const responseData = await response.json();
 
-      if (!responseData.fulfillmentText) {
+      if (!responseData) {
         throw new Error("Invalid response format from the server");
       }
 
       setMessages((prev) => [
         ...prev,
-        { id: Math.random().toString(36).slice(2), role: "assistant", content: responseData.fulfillmentText },
+        { id: Math.random().toString(36).slice(2), role: "assistant", content: responseData.response },
       ]);
     } catch (err) {
       setError("Error connecting to the chatbot. Please try again.");
