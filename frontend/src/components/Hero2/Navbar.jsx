@@ -200,10 +200,17 @@ const Navbar = () => {
                 onMouseEnter={handleDropdownOpen}
                 onMouseLeave={handleDropdownClose}
               >
-                <Link href="/dashboard" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  <LayoutDashboard className="inline-block w-4 h-4 mr-2" />
-                  {t("dashboard")}
-                </Link>
+                 {user.role === "doctor" ? (
+                    <Link href="/dashboard/doctor" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <LayoutDashboard className="inline-block w-4 h-4 mr-2" />
+                      {t("dashboard")}
+                    </Link>
+                  ) : user.role === "patient" ? (
+                    <Link href="/dashboard/patient" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                      <LayoutDashboard className="inline-block w-4 h-4 mr-2" />
+                      {t("dashboard")}
+                    </Link>
+                  ) : null}
                 <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   <User className="inline-block w-4 h-4 mr-2" />
                   {t("profile")}
@@ -292,15 +299,27 @@ const Navbar = () => {
                       </div>
                     </div>
                   </Link>
-                  <Link href="/dashboard" className="py-2 text-gray-700 hover:text-blue-600">
+                  {/* <Link href="/dashboard" className="py-2 text-gray-700 hover:text-blue-600">
                     <LayoutDashboard className="inline-block w-4 h-4 mr-2" />
                     Dashboard
-                  </Link>
+                  </Link> */}
+                  {/* if the user has the role doctor push the user to /dashboard/doctor if the role is patient then /dashboard/patient  */}
+                  {user.role === "doctor" ? (
+                    <Link href="/dashboard/doctor" className="py-2 text-gray-700 hover:text-blue-600">
+                      <LayoutDashboard className="inline-block w-4 h-4 mr-2" />
+                      {t("dashboard")}
+                    </Link>
+                  ) : user.role === "patient" ? (
+                    <Link href="/dashboard/patient" className="py-2 text-gray-700 hover:text-blue-600">
+                      <LayoutDashboard className="inline-block w-4 h-4 mr-2" />
+                      {t("dashboard")}
+                    </Link>
+                  ) : null}
                   <Link href="/profile" className="py-2 text-gray-700 hover:text-blue-600">
                     <User className="inline-block w-4 h-4 mr-2" />
                     Profile
                   </Link>
-                  <button onClick={logOut} className="py-2 text-gray-700 hover:text-blue-600">
+                  <button onClick={()=>{logout()}} className="py-2 text-gray-700 hover:text-blue-600">
                     <LogOut className="inline-block w-4 h-4 mr-2" />
                     Sign Out
                   </button>

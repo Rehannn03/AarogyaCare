@@ -106,7 +106,7 @@ const page = () => {
         })
 
         // Refresh doctor data
-        const response = await apiClient("/doctors/getDoctor")
+        const response = await apiClient.get("/doctors/getDoctor")
         setData(response.data.data.doctor)
         setNewDegree(null) // Reset the file selection
         setIsEditing(false)

@@ -5,6 +5,10 @@ import { useTranslations } from "next-intl";
 import RevealonScroll from "../../RevealonScroll";
 import { FaArrowRight } from "react-icons/fa";
 import { StetoScope } from "./icons/StetoScope";
+import { FaAddressBook } from "react-icons/fa";
+import { BsRobot } from "react-icons/bs";
+import { PiDnaFill } from "react-icons/pi";
+import { IoMdAnalytics } from "react-icons/io";
 
 const Services = () => {
   const  t  = useTranslations("Services");
@@ -14,37 +18,52 @@ const Services = () => {
       number: "01",
       title: t("intelligent_virtual_consultations"),
       description: t("intelligent_virtual_consultations_desc"),
-      icon: <StetoScope />,
+      icon: (
+        <StetoScope className="text-indigo-600 size-8" />
+      ), // Medical = Indigo
     },
     {
       number: "02",
       title: t("intuitive_appointment_booking"),
       description: t("intuitive_appointment_booking_desc"),
-      icon: <StetoScope />,
+      icon: (
+        <FaAddressBook className="text-amber-500 size-8" />
+      ), // Booking = Amber/Yellow
     },
     {
       number: "03",
       title: t("patient_records_management"),
       description: t("patient_records_management_desc"),
-      icon: "",
+      icon: (
+        <IoMdAnalytics className="text-green-600 size-8" />
+      ), // Analytics/Records = Green
     },
     {
       number: "04",
       title: t("ai_telehealth_chatbot"),
       description: t("ai_telehealth_chatbot_desc"),
-      icon: "<icon1/>",
+      icon: (
+        <BsRobot className="text-cyan-500 size-8" />
+      ), // AI Chatbot = Cyan/Tech vibe
     },
     {
       number: "05",
       title: t("remote_health_monitoring"),
       description: t("remote_health_monitoring_desc"),
-      icon: "📊",
+      icon: (
+        <span role="img" className="text-rose-500 text-3xl">📊</span>
+      ), // Monitoring = Chart emoji with rose tone
     },
     {
       number: "06",
       title: t("ai_powered_diagnosis_assistance"),
       description: t("ai_powered_diagnosis_assistance_desc"),
-      icon: "🧬",
+      icon: (
+        <PiDnaFill
+          size={40}
+          className="text-purple-500 size-10"
+        />
+      ), // DNA = Gradient for science/innovation feel
     },
   ];
 
@@ -92,7 +111,7 @@ const Services = () => {
                   {service.number}
                 </div>
 
-                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center md:justify-center justify-end text-[2.5vh] gap-4">
+                <div className="w-20 h-20 bg-gray-200 rounded-full flex items-center md:justify-center justify-center text-[2.5vh] gap-4">
                   {service.icon}
                 </div>
 
@@ -103,9 +122,7 @@ const Services = () => {
                   <p className="text-xl text-gray-600">{service.description}</p>
                 </div>
 
-                <div className="justify-end">
-                  <FaArrowRight />
-                </div>
+                
               </motion.div>
             ))}
           </motion.div>
