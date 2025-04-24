@@ -315,7 +315,7 @@ const deactivateMedicine = asyncHandler(async (req, res) => {
   const { medicineId } = req.params;
 
   const medicine = await Medicine.findByIdAndUpdate(medicineId, {
-    isActive: false,
+    active: false,
   });
 
   if (!medicine) {
