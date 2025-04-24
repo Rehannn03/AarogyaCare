@@ -12,8 +12,13 @@ function SelectDoctor({ selectedDoctor, setSelectedDoctor }) {
   const getAllDoctors = async () => {
     setLoading(true);
     const response = await apiClient.get("/doctors/getAllDoctors");
+    // update ressone to have only verifed doctors
+    const verifiedDoctors = response.data.data.doctors.filter(
+      (doctor) => doctor?.verified === true
+    );
+    setAllDoctors(verifiedDoctors);
     if (response.status === 200) {
-      setAllDoctors(response.data.data.doctors);
+      setAllDoctors(verifiedDoctors);
     } else {
       toast({
         title: "Error",
