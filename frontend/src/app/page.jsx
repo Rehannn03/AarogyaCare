@@ -44,7 +44,7 @@ function useChat() {
     setError(null);
 
     try {
-      const response = await fetch("https://cf7e-2401-4900-5706-9b4c-e993-2e7c-755e-105d.ngrok-free.app/query", {
+      const response = await fetch("https://25df-2409-40c0-6c-4cf9-75ed-6ff0-4d6f-b524.ngrok-free.app/query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: newMessage.content }),
