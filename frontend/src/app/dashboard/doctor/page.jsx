@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Users, CalendarCheck, Stethoscope, DollarSign, CheckCircle, XCircle, ChevronRight, Video } from "lucide-react"
+import { Users, CalendarCheck, Stethoscope, DollarSign, CheckCircle, XCircle, ChevronRight, Video, CalendarDays, ChevronUp, ChevronDown, CheckCircle2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -15,6 +15,7 @@ import VideoCallButton from "@/components/VideoCall/VideoCallButton"
 import { format } from "date-fns"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/seprator"
+import { Progress } from "@/components/ui/progress"
 
 // API client
 import apiClient from "@/api-client/apiClient"
@@ -33,8 +34,11 @@ export default function DoctorDashboard() {
   })
   const [selectedAppointment, setSelectedAppointment] = useState(null)
   const [showConsultationForm, setShowConsultationForm] = useState(false)
-
-  
+  const [earningsData, setEarningsData] = useState({
+    earnings: 0,
+    completed: 0,
+    total: 0
+  })
 
   // Metrics data
   const metrics = [
@@ -64,7 +68,7 @@ export default function DoctorDashboard() {
     },
     {
       title: "Revenue",
-      value: `$${(doctor?.consultationFee || 0) * appointments.filter((app) => app.status === "approved").length}`,
+      value: `$${earningsData.earnings || 0}`,
       change: "+15.3%",
       icon: <DollarSign className="h-6 w-6 text-violet-500" />,
       trend: "up",
@@ -74,31 +78,36 @@ export default function DoctorDashboard() {
 
   // Fetch doctor data
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true)
-      try {
-        // Fetch doctor data
-        const doctorResponse = await apiClient.get("/doctors/getDoctor")
-        if (doctorResponse.data.success) {
-          setDoctor(doctorResponse.data.data.doctor)
-        }
-        console.log(doctor);
-        
-
-        // Fetch appointments
-        const appointmentsResponse = await apiClient.get("/doctors/getAppointments")
-        if (appointmentsResponse.data.success) {
-          setAppointments(appointmentsResponse.data.data.appointments)
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
     fetchData()
   }, [])
+
+  // Fetch doctor data
+  const fetchData = async () => {
+    setLoading(true)
+    try {
+      // Fetch doctor data
+      const doctorResponse = await apiClient.get("/doctors/getDoctor")
+      if (doctorResponse.data.success) {
+        setDoctor(doctorResponse.data.data.doctor)
+      }
+
+      // Fetch appointments
+      const appointmentsResponse = await apiClient.get("/doctors/getAppointments")
+      if (appointmentsResponse.data.success) {
+        setAppointments(appointmentsResponse.data.data.appointments)
+      }
+      
+      // Fetch earnings data
+      const earningsResponse = await apiClient.get("/doctors/earnings")
+      if (earningsResponse.data.success) {
+        setEarningsData(earningsResponse.data.data)
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // Handle appointment status update
   const handleUpdateAppointment = async (appointmentId, status) => {
@@ -281,6 +290,107 @@ export default function DoctorDashboard() {
               </Card>
             ))}
           </div>
+
+          {/* Earnings Section */}
+          <Card className="border-none shadow-md">
+            <CardHeader className="border-b">
+              <CardTitle>Earnings Overview</CardTitle>
+              <CardDescription>Your financial performance summary</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Total Earnings */}
+                <div className="bg-gradient-to-br from-green-500 to-emerald-700 rounded-xl text-white p-6 flex flex-col">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-sm font-medium text-green-100 mb-1">Total Earnings</p>
+                      <h3 className="text-3xl font-bold">${earningsData.earnings}</h3>
+                    </div>
+                    <div className="bg-white/20 rounded-full p-2">
+                      <DollarSign className="h-6 w-6" />
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-center">
+                    <span className="text-sm text-green-100 flex items-center">
+                      <ChevronUp className="h-4 w-4 mr-1" />
+                      +12.5%
+                    </span>
+                    <span className="text-xs text-green-100 ml-1">from last month</span>
+                  </div>
+                </div>
+
+                {/* Completion Rate */}
+                <div className="bg-white rounded-xl p-6 shadow-sm border">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-500 mb-1">Completion Rate</p>
+                      <h3 className="text-2xl font-bold">
+                        {earningsData.total > 0
+                          ? Math.round((earningsData.completed / earningsData.total) * 100)
+                          : 0}%
+                      </h3>
+                    </div>
+                    <div className="bg-blue-100 rounded-full p-2 text-blue-600">
+                      <CheckCircle2 className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <Progress 
+                    value={earningsData.total > 0 
+                      ? Math.round((earningsData.completed / earningsData.total) * 100)
+                      : 0
+                    } 
+                    className="h-2 mb-2"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>{earningsData.completed} completed</span>
+                    <span>{earningsData.total} total</span>
+                  </div>
+                </div>
+
+                {/* Appointment to Earnings */}
+                <div className="bg-white rounded-xl p-6 shadow-sm border">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <p className="text-sm font-medium text-gray-500 mb-1">Avg. Revenue per Appointment</p>
+                      <h3 className="text-2xl font-bold">
+                        ${earningsData.completed > 0 
+                          ? Math.round(earningsData.earnings / earningsData.completed) 
+                          : doctor?.consultationFee || 0}
+                      </h3>
+                    </div>
+                    <div className="bg-amber-100 rounded-full p-2 text-amber-600">
+                      <CalendarDays className="h-5 w-5" />
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col space-y-2 mt-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">Fee Collection Rate</span>
+                      <span className="text-sm font-medium">
+                        {earningsData.total > 0 
+                          ? Math.round((earningsData.completed / earningsData.total) * 100)
+                          : 0}%
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="flex items-center text-emerald-600">
+                        <ChevronUp className="h-4 w-4 mr-1" />
+                        Paid Appointments
+                      </span>
+                      <span>{earningsData.completed}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="flex items-center text-gray-500">
+                        <ChevronDown className="h-4 w-4 mr-1" />
+                        Pending Payments
+                      </span>
+                      <span>{earningsData.total - earningsData.completed}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Appointments */}
           <Card className="border-none shadow-md">
