@@ -346,7 +346,7 @@ export default function PatientDashboard() {
                   <CardTitle>Your Appointments</CardTitle>
                   <CardDescription>Manage your medical visits</CardDescription>
                 </div>
-                <Link href="/appointment">
+                <Link href="/dashboard/book-appointment">
                   <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Book Appointment
@@ -369,7 +369,7 @@ export default function PatientDashboard() {
                       <h3 className="text-lg font-medium text-gray-600 mb-1">No appointments found</h3>
                       <p className="text-gray-500 mb-4">You don't have any {activeTab} appointments.</p>
                       {activeTab === "upcoming" && (
-                        <Link href="/appointment">
+                        <Link href="/dashboard/book-appointment">
                           <Button size="sm">Book an appointment</Button>
                         </Link>
                       )}
