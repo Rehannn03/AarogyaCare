@@ -115,6 +115,13 @@ function Sidebar() {
       link: "/dashboard/prescriptions",
       allowed: ["patient"],
     },
+    // reports upload
+    {
+      name: "Upload Reports",
+      icon: <FaUserDoctor className="w-5 h-5" />,
+      link: "/dashboard/upload-reports",
+      allowed: ["patient"],
+    },
     // Admin-specific Items
     {
       name: "Analytics",
